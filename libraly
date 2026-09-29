@@ -50,6 +50,12 @@ local function New(class, props, parent)
 		obj[k] = v
 	end
 
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+		pcall(function()
+			obj.AutoLocalize = false
+		end)
+	end
+
 	obj.Parent = parent
 	return obj
 end
@@ -1151,8 +1157,12 @@ local function CreateSlider(parent, title, description, min, max, default, callb
 	}
 end
 
-local function CreateDropdown(parent, title, description, options)
+local function CreateDropdown(parent, title, description, options, callback)
 	local f = ControlFrame(parent, 58)
+	options = type(options) == "table" and options or {}
+	if #options == 0 then
+		options = {"NONE"}
+	end
 
 	local titleLabel = Label(
 		f,
@@ -1242,6 +1252,9 @@ local function CreateDropdown(parent, title, description, options)
 			selected = option
 			drop.Text = tostring(option)
 			list.Visible = false
+			if callback then
+				callback(selected)
+			end
 		end)
 	end
 
@@ -1386,13 +1399,7 @@ local function MakeSectionObject(page, title, rightText)
 	end
 
 	function object:NewDropdown(name, description, options, callback)
-		local result = CreateDropdown(page, name, description, options or {})
-		if callback and result and result.Button then
-			result.Button.MouseButton1Click:Connect(function()
-				callback(result.Get())
-			end)
-		end
-		return result
+		return CreateDropdown(page, name, description, options, callback)
 	end
 
 	function object:NewKeybind(name, description, key, callback)
@@ -2276,21 +2283,3 @@ function Library:Destroy()
 end
 
 return Library
-
-local EffectTime = 0
-
-RunService.RenderStepped:Connect(function(dt)
-	if not Gui.Parent then
-		return
-	end
-
-	EffectTime += dt
-
-	if MainGlow and MainGlow.Parent then
-		local pulse =
-			(math.sin(EffectTime * 1.25) + 1) / 2
-
-		MainGlow.BackgroundTransparency =
-			0.991 - pulse * 0.003
-	end
-end)
