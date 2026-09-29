@@ -491,6 +491,53 @@ CreateCircle(
 	0.95
 )
 
+-- Very subtle, low-cost ambient effects.
+local MenuScan = New("Frame", {
+	Size = UDim2.new(0, 1, 1, -90),
+	Position = UDim2.new(0, 0, 0, 72),
+	BackgroundColor3 = C.White,
+	BackgroundTransparency = 0.975,
+	BorderSizePixel = 0,
+	ZIndex = 24
+}, Menu)
+
+local MenuPulse = New("Frame", {
+	Size = UDim2.fromOffset(2, 2),
+	Position = UDim2.new(0.78, 0, 0.18, 0),
+	BackgroundColor3 = C.White,
+	BackgroundTransparency = 0.82,
+	BorderSizePixel = 0,
+	ZIndex = 24
+}, Menu)
+Corner(MenuPulse, 2)
+
+task.spawn(function()
+	while Menu and Menu.Parent do
+		if Menu.Visible then
+			Tween(MenuScan, {
+				Position = UDim2.new(1, -1, 0, 72),
+				BackgroundTransparency = 0.985
+			}, 2.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+			task.wait(2.9)
+
+			if Menu and Menu.Parent and Menu.Visible then
+				MenuScan.Position = UDim2.new(0, 0, 0, 72)
+				Tween(MenuPulse, {
+					BackgroundTransparency = 0.93,
+					Size = UDim2.fromOffset(5, 5)
+				}, 0.45, Enum.EasingStyle.Sine)
+				task.wait(0.45)
+				Tween(MenuPulse, {
+					BackgroundTransparency = 0.82,
+					Size = UDim2.fromOffset(2, 2)
+				}, 0.55, Enum.EasingStyle.Sine)
+			end
+		else
+			task.wait(0.5)
+		end
+	end
+end)
+
 local Header = New("Frame", {
 	Size = UDim2.new(1, 0, 0, 64),
 	BackgroundColor3 = C.Black,
@@ -1486,36 +1533,11 @@ local MenuOpen = true
 local Animating = false
 local Minimized = false
 local Destroying = false
-
-local OriginalPosition = Menu.Position
-
-local function CreateFragment(parent, size, position, text, z)
-	local fragment = New("Frame", {
-		Size = size,
-		Position = position,
-		BackgroundColor3 = C.Panel3,
-		BorderSizePixel = 0,
-		ZIndex = z or 150
-	}, parent)
-
-	Corner(fragment, 2)
-	Stroke(fragment, C.Line2, 1, 0)
-
-	if text then
-		local t = Label(
-			fragment,
-			text,
-			7,
-			C.Gray,
-			Enum.Font.Code
-		)
-
-		t.Size = UDim2.fromScale(1, 1)
-		t.TextXAlignment = Enum.TextXAlignment.Center
-	end
-
-	return fragment
-end
+local CollapseCube = nil
+local CubeDragging = false
+local CubeDragStart = nil
+local CubeStartPosition = nil
+local CubeDragMoved = false
 
 local function GetMenuCenter()
 	return Vector2.new(
@@ -1524,143 +1546,172 @@ local function GetMenuCenter()
 	)
 end
 
-local function CreateCollapseCube()
-	local holder = New("Frame", {
-		Size = UDim2.fromOffset(86, 86),
-		Position = UDim2.fromOffset(
-			Menu.AbsolutePosition.X + Menu.AbsoluteSize.X / 2 - 43,
-			Menu.AbsolutePosition.Y + Menu.AbsoluteSize.Y / 2 - 43
-		),
-		BackgroundTransparency = 1,
-		ZIndex = 200
-	}, Gui)
+local function CreateCollapseParticles(center, count, outward)
+	local particles = {}
+	local guiCenter = center or GetMenuCenter()
+	local total = count or 10
 
-	local outer = New("Frame", {
-		Size = UDim2.fromOffset(54, 54),
-		Position = UDim2.new(0.5, -27, 0.5, -27),
-		BackgroundColor3 = C.Black2,
-		BorderSizePixel = 0,
-		ZIndex = 201
-	}, holder)
+	for i = 1, total do
+		local angle = ((i - 1) / total) * math.pi * 2 + math.random(-20, 20) * 0.01
+		local distance = math.random(70, 150)
+		local size = math.random(4, 8)
 
-	Corner(outer, 5)
-	Stroke(outer, C.White, 1, 0.15)
+		local particle = New("Frame", {
+			Size = UDim2.fromOffset(size, size),
+			Position = UDim2.fromOffset(
+				guiCenter.X - size / 2,
+				guiCenter.Y - size / 2
+			),
+			BackgroundColor3 = C.Black,
+			BackgroundTransparency = 0.02,
+			BorderSizePixel = 0,
+			Rotation = math.random(0, 90),
+			ZIndex = 600
+		}, Gui)
 
-	local inner = New("Frame", {
-		Size = UDim2.fromOffset(26, 26),
-		Position = UDim2.new(0.5, -13, 0.5, -13),
-		BackgroundColor3 = C.Panel3,
-		BorderSizePixel = 0,
-		ZIndex = 202
-	}, outer)
+		Corner(particle, 1)
+		Stroke(particle, C.Line2, 1, 0.35)
 
-	Corner(inner, 3)
-	Stroke(inner, C.Line2, 1, 0)
+		local targetDistance = outward and distance or math.random(18, 42)
+		local target = Vector2.new(
+			guiCenter.X + math.cos(angle) * targetDistance,
+			guiCenter.Y + math.sin(angle) * targetDistance
+		)
 
-	New("Frame", {
-		Size = UDim2.fromOffset(12, 1),
-		Position = UDim2.new(0.5, -6, 0.5, -1),
-		BackgroundColor3 = C.White,
-		BorderSizePixel = 0,
-		ZIndex = 203
-	}, inner)
+		Tween(particle, {
+			Position = UDim2.fromOffset(
+				target.X - size / 2,
+				target.Y - size / 2
+			),
+			Size = UDim2.fromOffset(2, 2),
+			Rotation = particle.Rotation + math.random(-160, 160),
+			BackgroundTransparency = 0.2
+		}, 0.34 + math.random() * 0.12, Enum.EasingStyle.Quart)
 
-	New("Frame", {
-		Size = UDim2.fromOffset(1, 12),
-		Position = UDim2.new(0.5, 0, 0.5, -6),
-		BackgroundColor3 = C.Gray,
-		BorderSizePixel = 0,
-		ZIndex = 203
-	}, inner)
+		task.delay(0.34, function()
+			if particle and particle.Parent then
+				Tween(particle, {
+					BackgroundTransparency = 1
+				}, 0.18)
+				local stroke = particle:FindFirstChildOfClass("UIStroke")
+				if stroke then
+					Tween(stroke, {Transparency = 1}, 0.18)
+				end
+				task.delay(0.2, function()
+					if particle and particle.Parent then
+						particle:Destroy()
+					end
+				end)
+			end
+		end)
 
-	return holder
-end
-
-local function GetFragments()
-	local fragments = {}
-
-	local function add(obj)
-		table.insert(fragments, obj)
+		table.insert(particles, particle)
 	end
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(240, 7),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 30, Menu.AbsolutePosition.Y + 35),
-		""
-	))
+	return particles
+end
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(120, 34),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 24, Menu.AbsolutePosition.Y + 15),
-		"USURE"
-	))
+local function CreateCollapseCube(position)
+	if CollapseCube and CollapseCube.Parent then
+		CollapseCube:Destroy()
+	end
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(160, 70),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 20, Menu.AbsolutePosition.Y + 92),
-		"NAV"
-	))
+	local center = position or GetMenuCenter()
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(180, 90),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 205, Menu.AbsolutePosition.Y + 92),
-		"MAIN"
-	))
+	local button = New("TextButton", {
+		Size = UDim2.fromOffset(34, 34),
+		Position = UDim2.fromOffset(center.X, center.Y),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundColor3 = C.Black2,
+		BackgroundTransparency = 0.04,
+		BorderSizePixel = 0,
+		Text = "",
+		AutoButtonColor = false,
+		Active = true,
+		Selectable = false,
+		ZIndex = 700
+	}, Gui)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(180, 55),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 395, Menu.AbsolutePosition.Y + 92),
-		"TEST"
-	))
+	Corner(button, 7)
+	local outerStroke = Stroke(button, C.Line2, 1, 0.1)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(145, 48),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 590, Menu.AbsolutePosition.Y + 92),
-		"CONTROL"
-	))
+	local inner = New("Frame", {
+		Size = UDim2.fromOffset(16, 16),
+		Position = UDim2.new(0.5, -8, 0.5, -8),
+		BackgroundColor3 = C.Panel3,
+		BorderSizePixel = 0,
+		ZIndex = 701
+	}, button)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(250, 90),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 205, Menu.AbsolutePosition.Y + 190),
-		"BUTTON"
-	))
+	Corner(inner, 4)
+	Stroke(inner, C.Gray3, 1, 0.15)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(150, 70),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 465, Menu.AbsolutePosition.Y + 190),
-		"TOGGLE"
-	))
+	local slash = New("Frame", {
+		Size = UDim2.fromOffset(11, 1),
+		Position = UDim2.new(0.5, -5, 0.5, -1),
+		Rotation = -45,
+		BackgroundColor3 = C.White,
+		BackgroundTransparency = 0.08,
+		BorderSizePixel = 0,
+		ZIndex = 702
+	}, inner)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(180, 55),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 205, Menu.AbsolutePosition.Y + 290),
-		"SLIDER"
-	))
+	local dot = New("Frame", {
+		Size = UDim2.fromOffset(3, 3),
+		Position = UDim2.new(0.5, -1.5, 0.5, -1.5),
+		BackgroundColor3 = C.White,
+		BorderSizePixel = 0,
+		ZIndex = 703
+	}, inner)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(210, 55),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 395, Menu.AbsolutePosition.Y + 290),
-		"DROPDOWN"
-	))
+	Corner(dot, 2)
 
-	add(CreateFragment(
-		Gui,
-		UDim2.fromOffset(90, 30),
-		UDim2.fromOffset(Menu.AbsolutePosition.X + 770, Menu.AbsolutePosition.Y + 16),
-		"X"
-	))
+	local glow = New("Frame", {
+		Size = UDim2.fromOffset(42, 42),
+		Position = UDim2.new(0.5, -21, 0.5, -21),
+		BackgroundColor3 = C.White,
+		BackgroundTransparency = 0.985,
+		BorderSizePixel = 0,
+		ZIndex = 699
+	}, button)
 
-	return fragments
+	Corner(glow, 21)
+
+	local hovering = false
+	button.MouseEnter:Connect(function()
+		hovering = true
+		Tween(button, {BackgroundColor3 = C.Panel4}, 0.12)
+		Tween(outerStroke, {Transparency = 0}, 0.12)
+		Tween(inner, {BackgroundColor3 = C.Panel4}, 0.12)
+	end)
+
+	button.MouseLeave:Connect(function()
+		hovering = false
+		Tween(button, {BackgroundColor3 = C.Black2}, 0.16)
+		Tween(outerStroke, {Transparency = 0.1}, 0.16)
+		Tween(inner, {BackgroundColor3 = C.Panel3}, 0.16)
+	end)
+
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			CubeDragging = true
+			CubeDragMoved = false
+			CubeDragStart = input.Position
+			CubeStartPosition = button.Position
+		end
+	end)
+
+	button.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			CubeDragging = false
+			if not CubeDragMoved and not Animating and not Destroying and Minimized then
+				task.defer(OpenMenuFromCube)
+			end
+		end
+	end)
+
+	CollapseCube = button
+	return button
 end
 
 local function HideMenuToCube()
@@ -1672,46 +1723,29 @@ local function HideMenuToCube()
 	Minimized = true
 	MenuOpen = false
 
-	local fragments = GetFragments()
 	local center = GetMenuCenter()
 
+	-- Hide every menu element immediately so no buttons, labels or panels remain visible.
 	Menu.Visible = false
 
-	local cube = CreateCollapseCube()
-
-	for _, fragment in ipairs(fragments) do
-		local current = fragment.AbsolutePosition
-
-		local dx = center.X - (current.X + fragment.AbsoluteSize.X / 2)
-		local dy = center.Y - (current.Y + fragment.AbsoluteSize.Y / 2)
-
-		Tween(fragment, {
-			Position = UDim2.fromOffset(
-				current.X + dx,
-				current.Y + dy
-			),
-			Size = UDim2.fromOffset(
-				math.max(8, fragment.AbsoluteSize.X * 0.18),
-				math.max(8, fragment.AbsoluteSize.Y * 0.18)
-			),
-			BackgroundTransparency = 0.05
-		}, 0.4, Enum.EasingStyle.Quart)
-
-		task.wait(0.015)
+	if CollapseCube and CollapseCube.Parent then
+		CollapseCube:Destroy()
 	end
 
-	task.wait(0.25)
+	CreateCollapseParticles(center, 10, true)
 
-	for _, fragment in ipairs(fragments) do
-		if fragment.Parent then
-			fragment:Destroy()
+	task.delay(0.42, function()
+		if Destroying then
+			return
 		end
-	end
-
-	Animating = false
+		if Minimized then
+			CreateCollapseCube(center)
+		end
+		Animating = false
+	end)
 end
 
-local function OpenMenuFromCube()
+function OpenMenuFromCube()
 	if Animating or Destroying or not Minimized then
 		return
 	end
@@ -1720,173 +1754,30 @@ local function OpenMenuFromCube()
 	Minimized = false
 	MenuOpen = true
 
-	local cubePosition = Vector2.new(
-		Menu.AbsolutePosition.X + Menu.AbsoluteSize.X / 2,
-		Menu.AbsolutePosition.Y + Menu.AbsoluteSize.Y / 2
-	)
+	local cubePosition = CollapseCube and Vector2.new(
+		CollapseCube.AbsolutePosition.X + CollapseCube.AbsoluteSize.X / 2,
+		CollapseCube.AbsolutePosition.Y + CollapseCube.AbsoluteSize.Y / 2
+	) or GetMenuCenter()
 
-	local cube = CreateCollapseCube()
-
-	local fragments = GetFragments()
-
-	for _, fragment in ipairs(fragments) do
-		fragment.Position = UDim2.fromOffset(
-			cubePosition.X - fragment.AbsoluteSize.X / 2,
-			cubePosition.Y - fragment.AbsoluteSize.Y / 2
-		)
-
-		fragment.Size = UDim2.fromOffset(10, 10)
+	if CollapseCube and CollapseCube.Parent then
+		CollapseCube:Destroy()
+		CollapseCube = nil
 	end
+
+	CreateCollapseParticles(cubePosition, 10, false)
 
 	Menu.Visible = true
 	Menu.BackgroundTransparency = 1
-
 	Tween(Menu, {
 		BackgroundTransparency = 0
-	}, 0.25)
+	}, 0.28, Enum.EasingStyle.Quart)
 
-	for _, fragment in ipairs(fragments) do
-		local target = fragment:GetAttribute("Target")
-
-		if target then
-			fragment.Position = target
+	task.delay(0.22, function()
+		if Menu and Menu.Parent then
+			Menu.Visible = true
 		end
-	end
-
-	local positions = {
-		{30, 35},
-		{24, 15},
-		{20, 92},
-		{205, 92},
-		{395, 92},
-		{590, 92},
-		{205, 190},
-		{465, 190},
-		{205, 290},
-		{395, 290},
-		{770, 16}
-	}
-
-	local sizes = {
-		{240, 7},
-		{120, 34},
-		{160, 70},
-		{180, 90},
-		{180, 55},
-		{145, 48},
-		{250, 90},
-		{150, 70},
-		{180, 55},
-		{210, 55},
-		{90, 30}
-	}
-
-	for i, fragment in ipairs(fragments) do
-		local p = positions[i]
-		local s = sizes[i]
-
-		Tween(fragment, {
-			Position = UDim2.fromOffset(
-				Menu.AbsolutePosition.X + p[1],
-				Menu.AbsolutePosition.Y + p[2]
-			),
-			Size = UDim2.fromOffset(s[1], s[2])
-		}, 0.45, Enum.EasingStyle.Quart)
-
-		task.wait(0.025)
-	end
-
-	task.wait(0.35)
-
-	for _, fragment in ipairs(fragments) do
-		if fragment.Parent then
-			fragment:Destroy()
-		end
-	end
-
-	if cube and cube.Parent then
-		Tween(cube, {
-			BackgroundTransparency = 1
-		}, 0.15)
-
-		for _, v in ipairs(cube:GetDescendants()) do
-			if v:IsA("Frame") then
-				Tween(v, {
-					BackgroundTransparency = 1
-				}, 0.15)
-			elseif v:IsA("UIStroke") then
-				Tween(v, {
-					Transparency = 1
-				}, 0.15)
-			end
-		end
-
-		task.delay(0.18, function()
-			if cube and cube.Parent then
-				cube:Destroy()
-			end
-		end)
-	end
-
-	Animating = false
-end
-
-local function CreateTrashCan()
-	local trash = New("Frame", {
-		Size = UDim2.fromOffset(100, 90),
-		Position = UDim2.new(0.5, -50, 1, 30),
-		BackgroundTransparency = 1,
-		ZIndex = 500
-	}, Gui)
-
-	local lid = New("Frame", {
-		Size = UDim2.fromOffset(48, 5),
-		Position = UDim2.new(0.5, -24, 0, 17),
-		BackgroundColor3 = C.White,
-		BorderSizePixel = 0,
-		ZIndex = 501
-	}, trash)
-
-	Corner(lid, 2)
-
-	local handle = New("Frame", {
-		Size = UDim2.fromOffset(15, 3),
-		Position = UDim2.new(0.5, -7, 0, 11),
-		BackgroundColor3 = C.Gray,
-		BorderSizePixel = 0,
-		ZIndex = 501
-	}, trash)
-
-	Corner(handle, 2)
-
-	local body = New("Frame", {
-		Size = UDim2.fromOffset(38, 48),
-		Position = UDim2.new(0.5, -19, 0, 23),
-		BackgroundColor3 = C.Panel3,
-		BorderSizePixel = 0,
-		ZIndex = 501
-	}, trash)
-
-	Corner(body, 3)
-	Stroke(body, C.White, 1, 0.1)
-
-	for i = 1, 3 do
-		local line = New("Frame", {
-			Size = UDim2.fromOffset(2, 28),
-			Position = UDim2.new(0, 9 + (i - 1) * 9, 0, 10),
-			BackgroundColor3 = C.Gray2,
-			BorderSizePixel = 0,
-			ZIndex = 502
-		}, body)
-
-		Corner(line, 1)
-	end
-
-	Tween(trash, {
-		Position = UDim2.new(0.5, -50, 1, -100)
-	}, 0.5, Enum.EasingStyle.Back)
-
-	return trash
+		Animating = false
+	end)
 end
 
 local function DestroyMenu()
@@ -1895,66 +1786,31 @@ local function DestroyMenu()
 	end
 
 	Destroying = true
+	MenuOpen = false
+	Minimized = false
 
-	local trash = CreateTrashCan()
-	local fragments = GetFragments()
+	local center
+	if CollapseCube and CollapseCube.Parent then
+		center = Vector2.new(
+			CollapseCube.AbsolutePosition.X + CollapseCube.AbsoluteSize.X / 2,
+			CollapseCube.AbsolutePosition.Y + CollapseCube.AbsoluteSize.Y / 2
+		)
+		CollapseCube:Destroy()
+		CollapseCube = nil
+	else
+		center = GetMenuCenter()
+	end
 
+	-- The complete menu disappears immediately; only the ten black fragments remain.
 	Menu.Visible = false
 
-	task.wait(0.25)
+	CreateCollapseParticles(center, 10, true)
 
-	for i, fragment in ipairs(fragments) do
-		local trashCenterX = trash.AbsolutePosition.X + trash.AbsoluteSize.X / 2
-		local trashCenterY = trash.AbsolutePosition.Y + trash.AbsoluteSize.Y / 2
-
-		local current = fragment.AbsolutePosition
-
-		local targetX = trashCenterX - fragment.AbsoluteSize.X / 2
-		local targetY = trashCenterY - fragment.AbsoluteSize.Y / 2
-
-		Tween(fragment, {
-			Position = UDim2.fromOffset(
-				targetX,
-				targetY
-			),
-			Size = UDim2.fromOffset(4, 4),
-			Rotation = math.random(-180, 180)
-		}, 0.45 + i * 0.015, Enum.EasingStyle.Back)
-
-		task.wait(0.035)
-	end
-
-	task.wait(0.6)
-
-	for _, fragment in ipairs(fragments) do
-		if fragment.Parent then
-			Tween(fragment, {
-				BackgroundTransparency = 1
-			}, 0.18)
-
-			local stroke = fragment:FindFirstChildOfClass("UIStroke")
-
-			if stroke then
-				Tween(stroke, {
-					Transparency = 1
-				}, 0.18)
-			end
-
-			task.delay(0.2, function()
-				if fragment.Parent then
-					fragment:Destroy()
-				end
-			end)
+	task.delay(0.62, function()
+		if Gui and Gui.Parent then
+			Gui:Destroy()
 		end
-	end
-
-	Tween(trash, {
-		Position = UDim2.new(0.5, -50, 1, 30)
-	}, 0.5, Enum.EasingStyle.Quart)
-
-	task.wait(0.55)
-
-	Gui:Destroy()
+	end)
 end
 
 MinButton.MouseButton1Click:Connect(function()
@@ -1988,6 +1844,19 @@ Header.InputEnded:Connect(function(input)
 end)
 
 UserInputService.InputChanged:Connect(function(input)
+	if CubeDragging and CollapseCube and CollapseCube.Parent and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - CubeDragStart
+		if math.abs(delta.X) > 4 or math.abs(delta.Y) > 4 then
+			CubeDragMoved = true
+		end
+
+		CollapseCube.Position = UDim2.fromOffset(
+			CubeStartPosition.X.Offset + delta.X,
+			CubeStartPosition.Y.Offset + delta.Y
+		)
+		return
+	end
+
 	if Dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 		local delta = input.Position - DragStart
 
@@ -2000,12 +1869,19 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		CubeDragging = false
+		Dragging = false
+	end
+end)
+
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed or Destroying then
 		return
 	end
 
-	if input.KeyCode == Enum.KeyCode.LeftAlt then
+	if input.KeyCode == Enum.KeyCode.LeftAlt or input.KeyCode == Enum.KeyCode.RightAlt then
 		if Minimized then
 			OpenMenuFromCube()
 		else
