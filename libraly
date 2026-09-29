@@ -647,10 +647,12 @@ local Tabs = {}
 local CurrentTab = nil
 local Library = {}
 local DestroyMenu
+local StartLibrary
 local WindowObjects = {}
 local IntroText = nil
 local GreetingText = nil
 local StartupStarted = false
+local StartupScheduled = false
 local PlayerLists = {}
 local Keybinds = {}
 
@@ -938,6 +940,19 @@ function Library:CreateLib(title, theme)
 	Title.Text = tostring(title or "USURE")
 	WindowObjects.Title = title
 	WindowObjects.Theme = theme
+
+	-- Startup is intentionally scheduled here, not when the library file loads.
+	-- This gives the caller time to add/remove CreateIntro/CreateGreeting lines.
+	if not StartupStarted and not StartupScheduled then
+		StartupScheduled = true
+		task.defer(function()
+			if StartupStarted or Destroying then return end
+			if StartLibrary then
+				StartLibrary()
+			end
+		end)
+	end
+
 	return self
 end
 
@@ -1553,10 +1568,8 @@ local function ShowMenu()
 	end
 end
 
-task.spawn(function()
-	-- The caller configures Intro/Greeting immediately after CreateLib.
-	-- Starting one deferred task prevents the default Roblox loading screen from flashing.
-	task.wait()
+StartLibrary = function()
+	if StartupStarted or Destroying then return end
 	if Greeting and Greeting.Parent then
 		Greeting.Visible = GreetingText ~= nil
 		Greeting.BackgroundTransparency = 0
@@ -1568,8 +1581,8 @@ task.spawn(function()
 		RunGreeting()
 	end
 	ShowMenu()
-	StartupStarted=true
-end)
+	StartupStarted = true
+end
 
 -- Keybind dispatcher.
 UserInputService.InputBegan:Connect(function(input, processed)
