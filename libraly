@@ -1001,16 +1001,20 @@ local function CreateToggle(parent, title, description, callback, default)
 	titleLabel.Size = UDim2.new(1, -100, 0, 20)
 	titleLabel.Position = UDim2.new(0, 13, 0, 7)
 
-	local desc = Label(
-		f,
-		description or "",
-		8,
-		C.Gray2,
-		Enum.Font.Code
-	)
-
-	desc.Size = UDim2.new(1, -100, 0, 17)
-	desc.Position = UDim2.new(0, 13, 0, 29)
+	local desc = nil
+	if description and tostring(description) ~= "" then
+		desc = Label(
+			f,
+			description,
+			8,
+			C.Gray2,
+			Enum.Font.Code
+		)
+		desc.Size = UDim2.new(1, -100, 0, 17)
+		desc.Position = UDim2.new(0, 13, 0, 29)
+	else
+		titleLabel.Position = UDim2.new(0, 13, 0.5, -10)
+	end
 
 	local toggle = New("TextButton", {
 		Size = UDim2.fromOffset(42, 22),
@@ -1051,38 +1055,49 @@ local function CreateToggle(parent, title, description, callback, default)
 
 	ApplyState()
 
-	toggle.MouseButton1Click:Connect(function()
-		state = not state
+	local rowButton = New("TextButton", {
+		Size = UDim2.new(1, 0, 1, 0),
+		BackgroundTransparency = 1,
+		Text = "",
+		AutoButtonColor = false,
+		ZIndex = 44
+	}, f)
 
-		if state then
-			Tween(toggle, {
-				BackgroundColor3 = C.White
-			}, 0.15)
+	-- Keep the actual switch above the row hitbox.
+	toggle.ZIndex = 45
+	knob.ZIndex = 46
 
+	local function SetToggleState(newState, animate)
+		state = newState == true
+		if animate then
+			Tween(toggle, {BackgroundColor3 = state and C.White or C.Panel4}, 0.15)
 			Tween(knob, {
-				Position = UDim2.new(1, -18, 0.5, -7),
-				BackgroundColor3 = C.Black
+				Position = state and UDim2.new(1, -18, 0.5, -7) or UDim2.new(0, 4, 0.5, -7),
+				BackgroundColor3 = state and C.Black or C.Gray2
 			}, 0.15)
 		else
-			Tween(toggle, {
-				BackgroundColor3 = C.Panel4
-			}, 0.15)
-
-			Tween(knob, {
-				Position = UDim2.new(0, 4, 0.5, -7),
-				BackgroundColor3 = C.Gray2
-			}, 0.15)
+			ApplyState()
 		end
+		if callback then callback(state) end
+	end
 
-		if callback then
-			callback(state)
-		end
+	rowButton.MouseButton1Click:Connect(function()
+		SetToggleState(not state, true)
+	end)
+
+	toggle.MouseButton1Click:Connect(function()
+		SetToggleState(not state, true)
 	end)
 
 	return {
 		Frame = f,
+		Button = rowButton,
+		Toggle = toggle,
 		Get = function()
 			return state
+		end,
+		Set = function(_, newState)
+			SetToggleState(newState, true)
 		end
 	}
 end
@@ -1425,6 +1440,40 @@ local StartupStarted = false
 local IntroText = nil
 local GreetingText = nil
 
+local SectionMethods = {}
+
+function SectionMethods:NewButton(name, description, callback)
+	return CreateButton(self.Page, name, description, callback)
+end
+
+function SectionMethods:NewToggle(name, description, callback, default)
+	return CreateToggle(self.Page, name, description, callback, default)
+end
+
+function SectionMethods:NewSlider(name, description, min, max, default, callback)
+	return CreateSlider(self.Page, name, description, min, max, default, callback)
+end
+
+function SectionMethods:NewDropdown(name, description, options, callback)
+	return CreateDropdown(self.Page, name, description, options, callback)
+end
+
+function SectionMethods:NewKeybind(name, description, key, callback)
+	return CreateKeybind(self.Page, name, description, key, callback)
+end
+
+function SectionMethods:NewPlayerList(name, description, callback)
+	return CreatePlayerList(self.Page, name, description, callback)
+end
+
+function SectionMethods:NewCollapse(name, description)
+	return CreateCollapse(self.Page, name, description)
+end
+
+function SectionMethods:NewList(name, description)
+	return CreateCollapse(self.Page, name, description)
+end
+
 local function MakeSectionObject(page, title, rightText)
 	local holder = Section(page, title, rightText)
 
@@ -1433,37 +1482,9 @@ local function MakeSectionObject(page, title, rightText)
 		Page = page
 	}
 
-	function object:NewButton(name, description, callback)
-		return CreateButton(page, name, description, callback)
-	end
-
-	function object:NewToggle(name, description, callback, default)
-		return CreateToggle(page, name, description, callback, default)
-	end
-
-	function object:NewSlider(name, description, min, max, default, callback)
-		return CreateSlider(page, name, description, min, max, default, callback)
-	end
-
-	function object:NewDropdown(name, description, options, callback)
-		return CreateDropdown(page, name, description, options, callback)
-	end
-
-	function object:NewKeybind(name, description, key, callback)
-		return CreateKeybind(page, name, description, key, callback)
-	end
-
-	function object:NewPlayerList(name, description, callback)
-		return CreatePlayerList(page, name, description, callback)
-	end
-
-	function object:NewCollapse(name, description)
-		return CreateCollapse(page, name, description)
-	end
-
-	function object:NewList(name, description)
-		return CreateCollapse(page, name, description)
-	end
+	setmetatable(object, {
+		__index = SectionMethods
+	})
 
 	return object
 end
@@ -1538,6 +1559,7 @@ local CubeDragging = false
 local CubeDragStart = nil
 local CubeStartPosition = nil
 local CubeDragMoved = false
+local SavedCubePosition = nil
 
 local function GetMenuCenter()
 	return Vector2.new(
@@ -1616,7 +1638,8 @@ local function CreateCollapseCube(position)
 		CollapseCube:Destroy()
 	end
 
-	local center = position or GetMenuCenter()
+	local center = position or SavedCubePosition or GetMenuCenter()
+	SavedCubePosition = center
 
 	local button = New("TextButton", {
 		Size = UDim2.fromOffset(34, 34),
@@ -1739,7 +1762,7 @@ local function HideMenuToCube()
 			return
 		end
 		if Minimized then
-			CreateCollapseCube(center)
+			CreateCollapseCube(SavedCubePosition or center)
 		end
 		Animating = false
 	end)
@@ -1853,6 +1876,10 @@ UserInputService.InputChanged:Connect(function(input)
 		CollapseCube.Position = UDim2.fromOffset(
 			CubeStartPosition.X.Offset + delta.X,
 			CubeStartPosition.Y.Offset + delta.Y
+		)
+		SavedCubePosition = Vector2.new(
+			CollapseCube.AbsolutePosition.X + CollapseCube.AbsoluteSize.X / 2,
+			CollapseCube.AbsolutePosition.Y + CollapseCube.AbsoluteSize.Y / 2
 		)
 		return
 	end
