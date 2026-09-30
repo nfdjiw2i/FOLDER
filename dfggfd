@@ -990,6 +990,68 @@ local function CreateButton(parent, title, description, callback)
 	}
 end
 
+
+local function CreateTextBox(parent, title, description, callback, default)
+	local f = ControlFrame(parent, 70)
+
+	local titleLabel = Label(f, title, 10, C.White, Enum.Font.Code)
+	titleLabel.Size = UDim2.new(0.45, -13, 0, 18)
+	titleLabel.Position = UDim2.new(0, 13, 0, 8)
+
+	local desc = nil
+	if description and tostring(description) ~= "" then
+		desc = Label(f, description, 8, C.Gray2, Enum.Font.Code)
+		desc.Size = UDim2.new(0.45, -13, 0, 17)
+		desc.Position = UDim2.new(0, 13, 0, 29)
+	end
+
+	local box = New("TextBox", {
+		Size = UDim2.new(0.48, -13, 0, 32),
+		Position = UDim2.new(0.52, 0, 0.5, -16),
+		BackgroundColor3 = C.Panel4,
+		BorderSizePixel = 0,
+		Text = default ~= nil and tostring(default) or "",
+		PlaceholderText = "Enter text...",
+		PlaceholderColor3 = C.Gray2,
+		TextColor3 = C.White,
+		TextSize = 9,
+		Font = Enum.Font.Code,
+		ClearTextOnFocus = false,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		ZIndex = 45
+	}, f)
+
+	Corner(box, 3)
+	Stroke(box, C.Line2, 1, 0)
+
+	local padding = New("UIPadding", {
+		PaddingLeft = UDim.new(0, 9),
+		PaddingRight = UDim.new(0, 9)
+	}, box)
+
+	box.Focused:Connect(function()
+		Tween(box, {BackgroundColor3 = C.Gray3}, 0.1)
+	end)
+
+	box.FocusLost:Connect(function(enterPressed)
+		Tween(box, {BackgroundColor3 = C.Panel4}, 0.1)
+		if callback then
+			callback(box.Text, enterPressed)
+		end
+	end)
+
+	return {
+		Frame = f,
+		TextBox = box,
+		Get = function()
+			return box.Text
+		end,
+		Set = function(_, value)
+			box.Text = value ~= nil and tostring(value) or ""
+		end
+	}
+end
+
 local function CreateToggle(parent, title, description, callback, default)
 	local f = ControlFrame(parent, 56)
 
@@ -1401,6 +1463,7 @@ local function CreateCollapse(parent, title, description)
 	end)
 	local object={Frame=holder,List=list}
 	function object:NewButton(name, desc, cb) return CreateButton(list,name,desc,cb) end
+	function object:NewTextBox(name, desc, cb, default) return CreateTextBox(list,name,desc,cb,default) end
 	function object:NewToggle(name, desc, cb, default) return CreateToggle(list,name,desc,cb,default) end
 	function object:NewSlider(name, desc, min, max, default, cb) return CreateSlider(list,name,desc,min,max,default,cb) end
 	return object
@@ -1447,6 +1510,10 @@ local SectionMethods = {}
 
 function SectionMethods:NewButton(name, description, callback)
 	return CreateButton(self.Page, name, description, callback)
+end
+
+function SectionMethods:NewTextBox(name, description, callback, default)
+	return CreateTextBox(self.Page, name, description, callback, default)
 end
 
 function SectionMethods:NewToggle(name, description, callback, default)
@@ -1513,6 +1580,13 @@ local function MakeTabObject(name, order)
 			CurrentSectionObject = self:NewSection("MAIN")
 		end
 		return CurrentSectionObject:NewButton(name, description, callback)
+	end
+
+	function object:NewTextBox(name, description, callback, default)
+		if not CurrentSectionObject or CurrentSectionObject.Page ~= page then
+			CurrentSectionObject = self:NewSection("MAIN")
+		end
+		return CurrentSectionObject:NewTextBox(name, description, callback, default)
 	end
 
 	function object:NewToggle(name, description, callback, default)
@@ -2173,6 +2247,11 @@ end
 function Library:NewButton(name, description, callback)
 	if not CurrentSectionObject then self:NewSection("MAIN") end
 	return CurrentSectionObject:NewButton(name, description, callback)
+end
+
+function Library:NewTextBox(name, description, callback, default)
+	if not CurrentSectionObject then self:NewSection("MAIN") end
+	return CurrentSectionObject:NewTextBox(name, description, callback, default)
 end
 
 function Library:NewToggle(name, description, callback, default)
