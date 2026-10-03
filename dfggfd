@@ -60,6 +60,15 @@ local function New(class, props, parent)
 	return obj
 end
 
+local function DisableLocalization(root)
+	if not root then return end
+	for _, obj in ipairs(root:GetDescendants()) do
+		if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+			pcall(function() obj.AutoLocalize = false end)
+		end
+	end
+end
+
 local function Tween(obj, props, time, style, direction)
 	if not obj or not obj.Parent then
 		return
@@ -77,7 +86,7 @@ local function Tween(obj, props, time, style, direction)
 	return t
 end
 
-local function Corner(obj, math.min(radius or 0, 4))
+local function Corner(obj, radius)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, radius)
 	c.Parent = obj
@@ -119,7 +128,7 @@ local function AddSoftGrid(parent)
 			Size = UDim2.new(1, 0, 0, 1),
 			Position = UDim2.new(0, 0, i / 9, 0),
 			BackgroundColor3 = C.White,
-			BackgroundTransparency = 0.99,
+			BackgroundTransparency = 0.975,
 			BorderSizePixel = 0
 		}, grid)
 	end
@@ -269,7 +278,7 @@ local SplashStatus = Label(
 	"INITIALIZING // 00%",
 	9,
 	C.Gray,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 SplashStatus.Size = UDim2.fromOffset(320, 22)
@@ -407,7 +416,7 @@ local Username = Label(
 	"@" .. Player.Name,
 	10,
 	C.Gray,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Username.Size = UDim2.new(1, 0, 0, 22)
@@ -427,7 +436,7 @@ local Clock = Label(
 	"00:00:00",
 	17,
 	C.White,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Clock.Size = UDim2.new(1, 0, 0, 30)
@@ -439,7 +448,7 @@ local Environment = Label(
 	"DAY // 00.00.0000",
 	9,
 	C.Gray,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Environment.Size = UDim2.new(1, 0, 0, 20)
@@ -451,7 +460,7 @@ local Welcome = Label(
 	"GOOD EVENING // SESSION READY",
 	9,
 	C.Gray2,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Welcome.Size = UDim2.new(1, 0, 0, 20)
@@ -499,7 +508,7 @@ local MenuScan = New("Frame", {
 	Size = UDim2.new(0, 1, 1, -90),
 	Position = UDim2.new(0, 0, 0, 72),
 	BackgroundColor3 = C.White,
-	BackgroundTransparency = 0.99,
+	BackgroundTransparency = 0.975,
 	BorderSizePixel = 0,
 	ZIndex = 24
 }, Menu)
@@ -603,7 +612,7 @@ local Subtitle = Label(
 	"CONTROL",
 	9,
 	C.Gray,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Subtitle.Size = UDim2.fromOffset(100, 18)
@@ -615,7 +624,7 @@ local Status = Label(
 	"STATUS: READY",
 	9,
 	C.Gray,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 Status.Size = UDim2.fromOffset(130, 20)
@@ -631,8 +640,8 @@ local function HeaderButton(text, x)
 		BorderSizePixel = 0,
 		Text = text,
 		TextColor3 = C.Gray,
-		TextSize = 13,
-		Font = Enum.Font.GothamSemibold,
+		TextSize = 12,
+		Font = Enum.Font.Code,
 		AutoButtonColor = false,
 		ZIndex = 35
 	}, Header)
@@ -668,7 +677,7 @@ local Sidebar = New("Frame", {
 	ZIndex = 25
 }, Menu)
 
-Corner(Sidebar, 2)
+Corner(Sidebar, 3)
 Stroke(Sidebar, C.Line, 1, 0)
 
 local SideTitle = Label(
@@ -676,7 +685,7 @@ local SideTitle = Label(
 	"NAVIGATION",
 	9,
 	C.Gray2,
-	Enum.Font.Gotham
+	Enum.Font.Code
 )
 
 SideTitle.Size = UDim2.new(1, -24, 0, 22)
@@ -753,7 +762,7 @@ end
 
 local function CreateTab(name, order)
 	local b = New("TextButton", {
-		Size = UDim2.new(1, 0, 0, 44),
+		Size = UDim2.new(1, 0, 0, 40),
 		BackgroundColor3 = C.Panel2,
 		BorderSizePixel = 0,
 		Text = "",
@@ -779,7 +788,7 @@ local function CreateTab(name, order)
 		"◆",
 		7,
 		C.Gray2,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	icon.Size = UDim2.fromOffset(15, 20)
@@ -791,7 +800,7 @@ local function CreateTab(name, order)
 		name,
 		10,
 		C.Gray,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	text.Size = UDim2.new(1, -42, 1, 0)
@@ -876,7 +885,7 @@ local function Section(parent, title, rightText)
 		title,
 		9,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	titleLabel.Size = UDim2.new(0.5, -5, 0, 20)
@@ -887,7 +896,7 @@ local function Section(parent, title, rightText)
 		rightText or "",
 		8,
 		C.Gray2,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	right.Size = UDim2.new(0.5, -10, 0, 20)
@@ -925,7 +934,7 @@ local function CreateButton(parent, title, description, callback)
 		title,
 		10,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	titleLabel.Size = UDim2.new(1, -30, 0, 20)
@@ -936,7 +945,7 @@ local function CreateButton(parent, title, description, callback)
 		description or "",
 		8,
 		C.Gray2,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	desc.Size = UDim2.new(1, -30, 0, 17)
@@ -990,68 +999,6 @@ local function CreateButton(parent, title, description, callback)
 	}
 end
 
-
-local function CreateTextBox(parent, title, description, callback, default)
-	local f = ControlFrame(parent, 76)
-
-	local titleLabel = Label(f, title, 13, C.White, Enum.Font.GothamSemibold)
-	titleLabel.Size = UDim2.new(0.45, -13, 0, 18)
-	titleLabel.Position = UDim2.new(0, 13, 0, 8)
-
-	local desc = nil
-	if description and tostring(description) ~= "" then
-		desc = Label(f, description, 10, C.Gray2, Enum.Font.Gotham)
-		desc.Size = UDim2.new(0.45, -13, 0, 17)
-		desc.Position = UDim2.new(0, 13, 0, 29)
-	end
-
-	local box = New("TextBox", {
-		Size = UDim2.new(0.48, -13, 0, 32),
-		Position = UDim2.new(0.52, 0, 0.5, -16),
-		BackgroundColor3 = C.Panel4,
-		BorderSizePixel = 0,
-		Text = default ~= nil and tostring(default) or "",
-		PlaceholderText = "Enter text...",
-		PlaceholderColor3 = C.Gray2,
-		TextColor3 = C.White,
-		TextSize = 11,
-		Font = Enum.Font.Gotham,
-		ClearTextOnFocus = false,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		ZIndex = 45
-	}, f)
-
-	Corner(box, 3)
-	Stroke(box, C.Line2, 1, 0)
-
-	local padding = New("UIPadding", {
-		PaddingLeft = UDim.new(0, 9),
-		PaddingRight = UDim.new(0, 9)
-	}, box)
-
-	box.Focused:Connect(function()
-		Tween(box, {BackgroundColor3 = C.Gray3}, 0.1)
-	end)
-
-	box.FocusLost:Connect(function(enterPressed)
-		Tween(box, {BackgroundColor3 = C.Panel4}, 0.1)
-		if callback then
-			callback(box.Text, enterPressed)
-		end
-	end)
-
-	return {
-		Frame = f,
-		TextBox = box,
-		Get = function()
-			return box.Text
-		end,
-		Set = function(_, value)
-			box.Text = value ~= nil and tostring(value) or ""
-		end
-	}
-end
-
 local function CreateToggle(parent, title, description, callback, default)
 	local f = ControlFrame(parent, 56)
 
@@ -1060,7 +1007,7 @@ local function CreateToggle(parent, title, description, callback, default)
 		title,
 		10,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	titleLabel.Size = UDim2.new(1, -100, 0, 20)
@@ -1073,7 +1020,7 @@ local function CreateToggle(parent, title, description, callback, default)
 			description,
 			8,
 			C.Gray2,
-			Enum.Font.Gotham
+			Enum.Font.Code
 		)
 		desc.Size = UDim2.new(1, -100, 0, 17)
 		desc.Position = UDim2.new(0, 13, 0, 29)
@@ -1082,7 +1029,7 @@ local function CreateToggle(parent, title, description, callback, default)
 	end
 
 	local toggle = New("TextButton", {
-		Size = UDim2.fromOffset(44, 24),
+		Size = UDim2.fromOffset(42, 22),
 		Position = UDim2.new(1, -56, 0.5, -11),
 		BackgroundColor3 = C.Panel4,
 		BorderSizePixel = 0,
@@ -1091,18 +1038,18 @@ local function CreateToggle(parent, title, description, callback, default)
 		ZIndex = 45
 	}, f)
 
-	Corner(toggle, 4)
+	Corner(toggle, 11)
 	Stroke(toggle, C.Line2, 1, 0)
 
 	local knob = New("Frame", {
-		Size = UDim2.fromOffset(15, 15),
+		Size = UDim2.fromOffset(14, 14),
 		Position = UDim2.new(0, 4, 0.5, -7),
 		BackgroundColor3 = C.Gray2,
 		BorderSizePixel = 0,
 		ZIndex = 46
 	}, toggle)
 
-	Corner(knob, 3)
+	Corner(knob, 7)
 
 	local state = default == true
 
@@ -1168,14 +1115,14 @@ local function CreateToggle(parent, title, description, callback, default)
 end
 
 local function CreateSlider(parent, title, description, min, max, default, callback)
-	local f = ControlFrame(parent, 76)
+	local f = ControlFrame(parent, 70)
 
 	local titleLabel = Label(
 		f,
 		title,
 		10,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	titleLabel.Size = UDim2.new(0.6, 0, 0, 20)
@@ -1186,7 +1133,7 @@ local function CreateSlider(parent, title, description, min, max, default, callb
 		tostring(default),
 		9,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	valueLabel.Size = UDim2.fromOffset(65, 20)
@@ -1198,7 +1145,7 @@ local function CreateSlider(parent, title, description, min, max, default, callb
 		description or "",
 		8,
 		C.Gray2,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	desc.Size = UDim2.new(1, -26, 0, 16)
@@ -1285,7 +1232,7 @@ local function CreateSlider(parent, title, description, min, max, default, callb
 end
 
 local function CreateDropdown(parent, title, description, options, callback)
-	local f = ControlFrame(parent, 64)
+	local f = ControlFrame(parent, 58)
 	options = type(options) == "table" and options or {}
 	if #options == 0 then
 		options = {"NONE"}
@@ -1296,7 +1243,7 @@ local function CreateDropdown(parent, title, description, options, callback)
 		title,
 		10,
 		C.White,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	titleLabel.Size = UDim2.new(0.5, 0, 0, 20)
@@ -1307,7 +1254,7 @@ local function CreateDropdown(parent, title, description, options, callback)
 		description or "",
 		8,
 		C.Gray2,
-		Enum.Font.Gotham
+		Enum.Font.Code
 	)
 
 	desc.Size = UDim2.new(0.5, 0, 0, 16)
@@ -1320,8 +1267,8 @@ local function CreateDropdown(parent, title, description, options, callback)
 		BorderSizePixel = 0,
 		Text = tostring(options[1]),
 		TextColor3 = C.White2,
-		TextSize = 11,
-		Font = Enum.Font.Gotham,
+		TextSize = 9,
+		Font = Enum.Font.Code,
 		AutoButtonColor = false,
 		ZIndex = 60
 	}, f)
@@ -1355,8 +1302,8 @@ local function CreateDropdown(parent, title, description, options, callback)
 			BorderSizePixel = 0,
 			Text = tostring(option),
 			TextColor3 = C.Gray,
-			TextSize = 11,
-			Font = Enum.Font.Gotham,
+			TextSize = 9,
+			Font = Enum.Font.Code,
 			AutoButtonColor = false,
 			ZIndex = 101
 		}, list)
@@ -1400,10 +1347,10 @@ end
 
 local function CreateKeybind(parent, title, description, defaultKey, callback)
 	local f = ControlFrame(parent, 56)
-	local titleLabel = Label(f, title, 13, C.White, Enum.Font.GothamSemibold)
+	local titleLabel = Label(f, title, 10, C.White, Enum.Font.Code)
 	titleLabel.Size = UDim2.new(0.55, 0, 0, 20)
 	titleLabel.Position = UDim2.new(0, 13, 0, 7)
-	local desc = Label(f, description or "", 10, C.Gray2, Enum.Font.Gotham)
+	local desc = Label(f, description or "", 8, C.Gray2, Enum.Font.Code)
 	desc.Size = UDim2.new(0.55, 0, 0, 17)
 	desc.Position = UDim2.new(0, 13, 0, 29)
 	local bind = New("TextButton", {
@@ -1411,7 +1358,7 @@ local function CreateKeybind(parent, title, description, defaultKey, callback)
 		Position = UDim2.new(1, -118, 0.5, -15),
 		BackgroundColor3 = C.Panel4, BorderSizePixel = 0,
 		Text = (defaultKey and defaultKey.Name) or "NONE", TextColor3 = C.White2,
-		TextSize = 11, Font = Enum.Font.Gotham, AutoButtonColor = false, ZIndex = 50
+		TextSize = 9, Font = Enum.Font.Code, AutoButtonColor = false, ZIndex = 50
 	}, f)
 	Corner(bind, 3)
 	Stroke(bind, C.Line2, 1, 0)
@@ -1442,12 +1389,12 @@ local function CreateKeybind(parent, title, description, defaultKey, callback)
 end
 
 local function CreateCollapse(parent, title, description)
-	local holder = New("Frame", {Size=UDim2.new(1,0,0,44), BackgroundTransparency=1, ClipsDescendants=false}, parent)
-	local button = New("TextButton", {Size=UDim2.new(1,0,0,44), BackgroundColor3=C.Panel2, BorderSizePixel=0, Text="", AutoButtonColor=false, ZIndex=50}, holder)
+	local holder = New("Frame", {Size=UDim2.new(1,0,0,40), BackgroundTransparency=1, ClipsDescendants=false}, parent)
+	local button = New("TextButton", {Size=UDim2.new(1,0,0,40), BackgroundColor3=C.Panel2, BorderSizePixel=0, Text="", AutoButtonColor=false, ZIndex=50}, holder)
 	Corner(button,3); Stroke(button,C.Line,1,0)
-	local label = Label(button, title, 13, C.White, Enum.Font.GothamSemibold)
+	local label = Label(button, title, 10, C.White, Enum.Font.Code)
 	label.Size=UDim2.new(1,-50,1,0); label.Position=UDim2.new(0,13,0,0)
-	local arrow = Label(button, "›", 16, C.Gray, Enum.Font.Gotham)
+	local arrow = Label(button, "›", 16, C.Gray, Enum.Font.Code)
 	arrow.Size=UDim2.fromOffset(20,40); arrow.Position=UDim2.new(1,-32,0,0); arrow.TextXAlignment=Enum.TextXAlignment.Center
 	local list = New("Frame", {Size=UDim2.new(1,0,0,0), Position=UDim2.new(0,0,0,44), BackgroundTransparency=1, Visible=false, ClipsDescendants=false}, holder)
 	local layout = New("UIListLayout", {Padding=UDim.new(0,6), SortOrder=Enum.SortOrder.LayoutOrder}, list)
@@ -1463,7 +1410,6 @@ local function CreateCollapse(parent, title, description)
 	end)
 	local object={Frame=holder,List=list}
 	function object:NewButton(name, desc, cb) return CreateButton(list,name,desc,cb) end
-	function object:NewTextBox(name, desc, cb, default) return CreateTextBox(list,name,desc,cb,default) end
 	function object:NewToggle(name, desc, cb, default) return CreateToggle(list,name,desc,cb,default) end
 	function object:NewSlider(name, desc, min, max, default, cb) return CreateSlider(list,name,desc,min,max,default,cb) end
 	return object
@@ -1472,8 +1418,8 @@ end
 local function CreatePlayerList(parent, title, description, callback)
 	local holder = New("Frame", {Size=UDim2.new(1,0,0,58), BackgroundColor3=C.Panel2, BorderSizePixel=0}, parent)
 	Corner(holder,3); Stroke(holder,C.Line,1,0)
-	local titleLabel=Label(holder,title,10,C.White,Enum.Font.Gotham); titleLabel.Size=UDim2.new(1,-26,0,20); titleLabel.Position=UDim2.new(0,13,0,7)
-	local desc=Label(holder,description or "",8,C.Gray2,Enum.Font.Gotham); desc.Size=UDim2.new(1,-26,0,17); desc.Position=UDim2.new(0,13,0,29)
+	local titleLabel=Label(holder,title,10,C.White,Enum.Font.Code); titleLabel.Size=UDim2.new(1,-26,0,20); titleLabel.Position=UDim2.new(0,13,0,7)
+	local desc=Label(holder,description or "",8,C.Gray2,Enum.Font.Code); desc.Size=UDim2.new(1,-26,0,17); desc.Position=UDim2.new(0,13,0,29)
 	local list=New("Frame", {Size=UDim2.new(1,0,0,0), Position=UDim2.new(0,0,1,4), BackgroundTransparency=1}, holder)
 	local layout=New("UIListLayout", {Padding=UDim.new(0,4), SortOrder=Enum.SortOrder.Name}, list)
 	local buttons={}
@@ -1482,7 +1428,7 @@ local function CreatePlayerList(parent, title, description, callback)
 		table.clear(buttons)
 		for _,target in ipairs(Players:GetPlayers()) do
 			if target ~= Player then
-				local b=New("TextButton", {Size=UDim2.new(1,0,0,34), BackgroundColor3=C.Panel2, BorderSizePixel=0, Text=target.DisplayName.."  @"..target.Name, TextColor3=C.Gray, TextSize=9, Font=Enum.Font.Gotham, AutoButtonColor=false}, list)
+				local b=New("TextButton", {Size=UDim2.new(1,0,0,34), BackgroundColor3=C.Panel2, BorderSizePixel=0, Text=target.DisplayName.."  @"..target.Name, TextColor3=C.Gray, TextSize=9, Font=Enum.Font.Code, AutoButtonColor=false}, list)
 				Corner(b,3); Stroke(b,C.Line,1,0)
 				b.MouseEnter:Connect(function() Tween(b,{BackgroundColor3=C.Panel4,TextColor3=C.White},0.1) end)
 				b.MouseLeave:Connect(function() Tween(b,{BackgroundColor3=C.Panel2,TextColor3=C.Gray},0.1) end)
@@ -1510,10 +1456,6 @@ local SectionMethods = {}
 
 function SectionMethods:NewButton(name, description, callback)
 	return CreateButton(self.Page, name, description, callback)
-end
-
-function SectionMethods:NewTextBox(name, description, callback, default)
-	return CreateTextBox(self.Page, name, description, callback, default)
 end
 
 function SectionMethods:NewToggle(name, description, callback, default)
@@ -1580,13 +1522,6 @@ local function MakeTabObject(name, order)
 			CurrentSectionObject = self:NewSection("MAIN")
 		end
 		return CurrentSectionObject:NewButton(name, description, callback)
-	end
-
-	function object:NewTextBox(name, description, callback, default)
-		if not CurrentSectionObject or CurrentSectionObject.Page ~= page then
-			CurrentSectionObject = self:NewSection("MAIN")
-		end
-		return CurrentSectionObject:NewTextBox(name, description, callback, default)
 	end
 
 	function object:NewToggle(name, description, callback, default)
@@ -2143,12 +2078,12 @@ local function ShowMenu()
 	)
 
 	Tween(Menu, {
-		Size = UDim2.fromOffset(900, 570),
+		Size = UDim2.fromOffset(760, 470),
 		Position = UDim2.new(
 			0.5,
-			-450,
+			-380,
 			0.5,
-			-285
+			-235
 		),
 		BackgroundTransparency = 0
 	}, 0.65, Enum.EasingStyle.Quart)
@@ -2169,7 +2104,8 @@ local function ShowMenu()
 end
 
 local function StartLibrary()
-	if StartupStarted then
+	DisableLocalization(Gui)
+	if StartupStarted or Destroying or not Gui.Parent then
 		return
 	end
 	StartupStarted = true
@@ -2247,11 +2183,6 @@ end
 function Library:NewButton(name, description, callback)
 	if not CurrentSectionObject then self:NewSection("MAIN") end
 	return CurrentSectionObject:NewButton(name, description, callback)
-end
-
-function Library:NewTextBox(name, description, callback, default)
-	if not CurrentSectionObject then self:NewSection("MAIN") end
-	return CurrentSectionObject:NewTextBox(name, description, callback, default)
 end
 
 function Library:NewToggle(name, description, callback, default)
