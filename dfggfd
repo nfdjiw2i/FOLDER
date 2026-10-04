@@ -159,18 +159,20 @@ Environment.Size=UDim2.new(1,0,0,20); Environment.Position=UDim2.new(0,0,0,126);
 local Welcome=Label(GreetingBox,"SESSION READY",9,C.Gray2)
 Welcome.Size=UDim2.new(1,0,0,20); Welcome.Position=UDim2.new(0,0,0,158); Welcome.TextXAlignment=Enum.TextXAlignment.Center
 
-local Menu=New("Frame",{Size=UDim2.fromOffset(1120,680),Position=UDim2.new(.5,-560,.5,-340),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
+local Menu=New("Frame",{Size=UDim2.fromOffset(1320,820),Position=UDim2.new(.5,-660,.5,-410),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
 Stroke(Menu,C.Line2,1,0)
 AddCornerMarks(Menu)
 AddGrid(Menu)
 
 local Header=New("Frame",{Size=UDim2.new(1,0,0,66),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=30},Menu)
 New("Frame",{Size=UDim2.new(1,-2,0,1),Position=UDim2.new(0,1,1,-1),BackgroundColor3=C.Line2,BorderSizePixel=0,ZIndex=31},Header)
-local Title=Label(Header,"USURE",22,C.White)
+local Title=Label(Header,"USURE",23,C.White)
 Title.Size=UDim2.fromOffset(170,30); Title.Position=UDim2.new(0,36,0,12)
-local Subtitle=Label(Header,"// PRIVATE BUILD",10,C.Gray)
+local Subtitle=Label(Header,"// PRIVATE BUILD",11,C.Gray)
 Subtitle.Size=UDim2.fromOffset(250,22); Subtitle.Position=UDim2.new(0,207,0,20)
 local ClockTop=Label(Header,"00:00:00",11,C.White2)
+local VersionTop=Label(Header,"v1.0.0",9,C.Gray2)
+VersionTop.Size=UDim2.fromOffset(70,24); VersionTop.Position=UDim2.new(1,-318,0,20); VersionTop.TextXAlignment=Enum.TextXAlignment.Right
 ClockTop.Size=UDim2.fromOffset(90,24); ClockTop.Position=UDim2.new(1,-240,0,20); ClockTop.TextXAlignment=Enum.TextXAlignment.Right
 New("Frame",{Size=UDim2.fromOffset(1,30),Position=UDim2.new(1,-150,0,18),BackgroundColor3=C.Line2,BorderSizePixel=0},Header)
 
@@ -184,33 +186,34 @@ local MinButton=HeaderButton("—",-136)
 local MaxButton=HeaderButton("□",-92)
 local CloseButton=HeaderButton("×",-48)
 
-local Sidebar=New("Frame",{Size=UDim2.new(0,300,1,-88),Position=UDim2.new(0,14,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25},Menu)
+local Sidebar=New("Frame",{Size=UDim2.new(0,340,1,-88),Position=UDim2.new(0,14,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25},Menu)
 New("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=C.Line,BackgroundTransparency=.55,BorderSizePixel=0,ZIndex=25},Sidebar)
 local SideTitle=Label(Sidebar,"NAVIGATION",10,C.Gray2)
 SideTitle.Size=UDim2.new(1,-30,0,24); SideTitle.Position=UDim2.new(0,16,0,12)
 New("Frame",{Size=UDim2.new(1,-30,0,1),Position=UDim2.new(0,15,0,40),BackgroundColor3=C.Line,BorderSizePixel=0},Sidebar)
-local TabHolder=New("Frame",{Size=UDim2.new(1,-24,1,-172),Position=UDim2.new(0,12,0,52),BackgroundTransparency=1,ZIndex=26},Sidebar)
+local TabHolder=New("Frame",{Size=UDim2.new(1,-24,1,-190),Position=UDim2.new(0,12,0,52),BackgroundTransparency=1,ZIndex=26},Sidebar)
 local TabLayout=New("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},TabHolder)
 
-local StatusBox=New("Frame",{Size=UDim2.new(1,-24,0,126),Position=UDim2.new(0,12,1,-138),BackgroundTransparency=1,ZIndex=26},Sidebar)
+local StatusBox=New("Frame",{Size=UDim2.new(1,-24,0,160),Position=UDim2.new(0,12,1,-172),BackgroundTransparency=1,ZIndex=26},Sidebar)
 New("Frame",{Size=UDim2.new(1,0,0,1),BackgroundColor3=C.Line2,BorderSizePixel=0},StatusBox)
 local StatusTitle=Label(StatusBox,"[ STATUS ]",10,C.White)
 StatusTitle.Size=UDim2.new(1,-20,0,20); StatusTitle.Position=UDim2.new(0,10,0,12)
 local StatusText=Label(StatusBox,"",9,C.Gray)
-StatusText.Size=UDim2.new(1,-20,0,76); StatusText.Position=UDim2.new(0,10,0,38)
+StatusText.Size=UDim2.new(1,-20,0,105); StatusText.Position=UDim2.new(0,10,0,38)
 
-local Content=New("Frame",{Size=UDim2.new(1,-328,1,-88),Position=UDim2.new(0,314,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25,ClipsDescendants=true},Menu)
+local Content=New("Frame",{Size=UDim2.new(1,-380,1,-88),Position=UDim2.new(0,366,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25,ClipsDescendants=true},Menu)
 Stroke(Content,C.Line,1,0)
 local ContentHeader=New("Frame",{Size=UDim2.new(1,0,0,88),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=27},Content)
-local ContentTitle=Label(ContentHeader,"MAIN",26,C.White)
-ContentTitle.Size=UDim2.new(.7,0,0,38); ContentTitle.Position=UDim2.new(0,30,0,10)
+local ContentTitle=Label(ContentHeader,"MAIN",28,C.White)
+ContentTitle.Size=UDim2.new(.7,0,0,40); ContentTitle.Position=UDim2.new(0,32,0,10)
 local ContentSubtitle=Label(ContentHeader,"// CORE FUNCTIONS",10,C.Gray)
-ContentSubtitle.Size=UDim2.new(.7,0,0,20); ContentSubtitle.Position=UDim2.new(0,32,0,49)
+ContentSubtitle.Size=UDim2.new(.7,0,0,20); ContentSubtitle.Position=UDim2.new(0,34,0,51)
 local ContentRight=Label(ContentHeader,"[ USURE MENU ]",9,C.Gray2)
 ContentRight.Size=UDim2.new(.3,-24,0,22); ContentRight.Position=UDim2.new(.7,0,0,25); ContentRight.TextXAlignment=Enum.TextXAlignment.Right
 New("Frame",{Size=UDim2.new(1,-2,0,1),Position=UDim2.new(0,1,1,-1),BackgroundColor3=C.Line2,BorderSizePixel=0},ContentHeader)
 
 local Pages={}
+local PageColumns={}
 local Tabs={}
 local TabOrder={}
 local CurrentTabObject=nil
@@ -238,19 +241,30 @@ local Connections={}
 local Library={}
 
 Library.Config={
-	ShowIcons=false,
+	ShowIcons=true,
 	AllowReorder=true,
 	Animate=true,
 	ToggleKey=Enum.KeyCode.RightShift,
 	UseAltToggle=true,
-	Width=1120,
-	Height=680
+	Width=1320,
+	Height=820
 }
 
 local function CreatePage(name)
-	local page=New("ScrollingFrame",{Name=name,Size=UDim2.new(1,-24,1,-100),Position=UDim2.new(0,12,0,94),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,ScrollBarImageColor3=C.White,ScrollBarImageTransparency=.65,CanvasSize=UDim2.new(),ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false,ZIndex=28},Content)
-	local layout=New("UIListLayout",{Padding=UDim.new(0,12),SortOrder=Enum.SortOrder.LayoutOrder},page)
-	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize=UDim2.fromOffset(0,layout.AbsoluteContentSize.Y+20) end)
+	local page=New("ScrollingFrame",{Name=name,Size=UDim2.new(1,-28,1,-104),Position=UDim2.new(0,14,0,96),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,ScrollBarImageColor3=C.White,ScrollBarImageTransparency=.78,CanvasSize=UDim2.new(),ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false,ZIndex=28},Content)
+	local left=New("Frame",{Name="LeftColumn",Size=UDim2.new(.5,-6,0,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1,ZIndex=29},page)
+	local right=New("Frame",{Name="RightColumn",Size=UDim2.new(.5,-6,0,0),Position=UDim2.new(.5,6,0,0),BackgroundTransparency=1,ZIndex=29},page)
+	local ll=New("UIListLayout",{Padding=UDim.new(0,14),SortOrder=Enum.SortOrder.LayoutOrder},left)
+	local rl=New("UIListLayout",{Padding=UDim.new(0,14),SortOrder=Enum.SortOrder.LayoutOrder},right)
+	PageColumns[name]={Left=left,Right=right,LeftLayout=ll,RightLayout=rl}
+	local function update()
+		local h=math.max(ll.AbsoluteContentSize.Y,rl.AbsoluteContentSize.Y)
+		left.Size=UDim2.new(.5,-6,0,h)
+		right.Size=UDim2.new(.5,-6,0,h)
+		page.CanvasSize=UDim2.fromOffset(0,h+18)
+	end
+	ll:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(update)
+	rl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(update)
 	Pages[name]=page
 	return page
 end
@@ -261,9 +275,10 @@ local function ActivateTab(name)
 	for n,d in pairs(Tabs) do
 		local active=n==name
 		d.Page.Visible=active
-		d.Button.BackgroundColor3=active and C.Panel3 or C.Panel
+		d.Button.BackgroundColor3=active and C.Panel3 or C.Black
 		d.Text.TextColor3=active and C.White or C.Gray
 		d.Indicator.Visible=active
+		if d.Border then d.Border.Color=active and C.White or C.Line end
 		if d.Icon then d.Icon.Visible=Library.Config.ShowIcons end
 	end
 	ContentTitle.Text=name
@@ -278,21 +293,38 @@ local function RebuildTabs()
 	end
 end
 
+local DefaultIcons = {
+	MAIN=">",
+	PLAYER="●",
+	PLAYERS="●",
+	VISUALS="◉",
+	WORLD="◇",
+	ESP="◎",
+	MISC="◆",
+	SETTINGS="≡"
+}
+
 local function CreateTab(name,icon)
 	local page=CreatePage(name)
-	local b=New("TextButton",{Size=UDim2.new(1,0,0,48),BackgroundColor3=C.Panel,BorderSizePixel=0,Text="",AutoButtonColor=false,ZIndex=30},TabHolder)
-	Stroke(b,C.Line,1,0)
-	local ind=New("Frame",{Size=UDim2.fromOffset(2,28),Position=UDim2.new(0,0,.5,-14),BackgroundColor3=C.White,BorderSizePixel=0,Visible=false,ZIndex=31},b)
-	local ico=Label(b,icon or ">",11,C.Gray2)
-	ico.Size=UDim2.fromOffset(26,48); ico.Position=UDim2.new(0,9,0,0); ico.TextXAlignment=Enum.TextXAlignment.Center; ico.Visible=Library.Config.ShowIcons
-	local text=Label(b,name,12,C.Gray)
-	text.Size=UDim2.new(1,-50,1,0); text.Position=UDim2.new(0,40,0,0)
+	icon = icon or DefaultIcons[string.upper(tostring(name))] or ">"
+
+	local b=New("TextButton",{Size=UDim2.new(1,0,0,56),BackgroundColor3=C.Black,BorderSizePixel=0,Text="",AutoButtonColor=false,ZIndex=30},TabHolder)
+	local border=Stroke(b,C.Line,1,0)
+	local ind=New("Frame",{Size=UDim2.fromOffset(2,38),Position=UDim2.new(0,0,.5,-19),BackgroundColor3=C.White,BorderSizePixel=0,Visible=false,ZIndex=31},b)
+	local ico=Label(b,icon or ">",13,C.White2)
+	ico.Size=UDim2.fromOffset(38,56); ico.Position=UDim2.new(0,12,0,0); ico.TextXAlignment=Enum.TextXAlignment.Center; ico.Visible=Library.Config.ShowIcons
+	local text=Label(b,name,13,C.Gray)
+	text.Size=UDim2.new(1,-62,1,0); text.Position=UDim2.new(0,56,0,0)
 	local object={Name=name,Page=page,Sections={}}
-	Tabs[name]={Button=b,Text=text,Icon=ico,Indicator=ind,Page=page,Object=object}
+	Tabs[name]={Button=b,Text=text,Icon=ico,Indicator=ind,Border=border,Page=page,Object=object}
 	table.insert(TabOrder,name)
 	setmetatable(object,{__index=Library.TabMethods})
-	b.MouseEnter:Connect(function() if CurrentTab~=name then b.BackgroundColor3=C.Panel2;text.TextColor3=C.White2 end end)
-	b.MouseLeave:Connect(function() if CurrentTab~=name then b.BackgroundColor3=C.Panel;text.TextColor3=C.Gray end end)
+	b.MouseEnter:Connect(function()
+		if CurrentTab~=name then b.BackgroundColor3=C.Panel2;text.TextColor3=C.White2 end
+	end)
+	b.MouseLeave:Connect(function()
+		if CurrentTab~=name then b.BackgroundColor3=C.Black;text.TextColor3=C.Gray end
+	end)
 	b.MouseButton1Click:Connect(function() ActivateTab(name) end)
 	RebuildTabs()
 	return object
@@ -559,30 +591,38 @@ function SectionMethods:Move(name,pos)
 end
 
 function Library.TabMethods:NewSection(title,rightText)
-	local holder=New("Frame",{Size=UDim2.new(1,0,0,42),BackgroundTransparency=1,LayoutOrder=#self.Sections+1},self.Page)
-	local head=New("Frame",{Size=UDim2.new(1,0,0,34),BackgroundTransparency=1},holder)
-	local titleLabel=Label(head,"[ "..tostring(title or "SECTION").." ]",11,C.White);titleLabel.Size=UDim2.new(.7,0,1,0);titleLabel.Position=UDim2.new(0,14,0,0)
-	if rightText then local r=Label(head,rightText,8,C.Gray2);r.Size=UDim2.new(.3,-14,1,0);r.Position=UDim2.new(.7,0,0,0);r.TextXAlignment=Enum.TextXAlignment.Right end
-	New("Frame",{Size=UDim2.new(1,-28,0,1),Position=UDim2.new(0,14,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0},head)
-	local page=New("Frame",{Size=UDim2.new(1,0,0,0),Position=UDim2.new(0,0,0,42),BackgroundTransparency=1},holder)
-	local layout=New("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},page)
-	local section={Name=tostring(title or "SECTION"),Frame=holder,Page=page,Elements={},Layout=layout}
+	local holder=New("Frame",{Size=UDim2.new(1,0,0,44),BackgroundColor3=C.Black2,BorderSizePixel=0,LayoutOrder=#self.Sections+1,ZIndex=31},PageColumns[self.Name].Left)
+	Stroke(holder,C.Line2,1,0)
+	local corner=New("Frame",{Size=UDim2.fromOffset(8,1),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
+	local corner2=New("Frame",{Size=UDim2.fromOffset(1,8),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
+	local corner3=New("Frame",{Size=UDim2.fromOffset(8,1),Position=UDim2.new(1,-8,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
+	local corner4=New("Frame",{Size=UDim2.fromOffset(1,8),Position=UDim2.new(1,-1,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
+	local head=New("Frame",{Size=UDim2.new(1,0,0,44),BackgroundTransparency=1,ZIndex=32},holder)
+	local titleLabel=Label(head,"[  "..string.upper(tostring(title or "SECTION")).."  ]",12,C.White);titleLabel.Size=UDim2.new(.7,0,1,0);titleLabel.Position=UDim2.new(0,18,0,0)
+	if rightText then local r=Label(head,rightText,8,C.Gray2);r.Size=UDim2.new(.3,-18,1,0);r.Position=UDim2.new(.7,0,0,0);r.TextXAlignment=Enum.TextXAlignment.Right end
+	New("Frame",{Size=UDim2.new(1,-28,0,1),Position=UDim2.new(0,14,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0,ZIndex=32},head)
+	local page=New("Frame",{Size=UDim2.new(1,-28,0,0),Position=UDim2.new(0,14,0,48),BackgroundTransparency=1,ZIndex=32},holder)
+	local layout=New("UIListLayout",{Padding=UDim.new(0,0),SortOrder=Enum.SortOrder.LayoutOrder},page)
+	local section={Name=tostring(title or "SECTION"),Frame=holder,Page=page,Elements={},Layout=layout,Tab=self}
 	setmetatable(section,{__index=SectionMethods})
 	table.insert(self.Sections,section)
-	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		page.Size=UDim2.new(1,0,0,layout.AbsoluteContentSize.Y)
-		holder.Size=UDim2.new(1,0,0,42+layout.AbsoluteContentSize.Y)
-	end)
+	local function resize()
+		page.Size=UDim2.new(1,-28,0,layout.AbsoluteContentSize.Y)
+		holder.Size=UDim2.new(1,0,0,48+layout.AbsoluteContentSize.Y)
+	end
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(resize)
+	if (#self.Sections % 2)==1 then holder.Parent=PageColumns[self.Name].Left else holder.Parent=PageColumns[self.Name].Right end
+	resize()
 	CurrentSectionObject=section;CurrentTabObject=self
 	return section
 end
 
-function Library.TabMethods:NewButton(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Parent~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewButton(n,d,c)end
-function Library.TabMethods:NewToggle(n,d,c,v)if not CurrentSectionObject or CurrentSectionObject.Page.Parent.Parent~=self.Page then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewToggle(n,d,c,v)end
-function Library.TabMethods:NewSlider(n,d,a,b,v,c)if not CurrentSectionObject or CurrentSectionObject.Page.Parent~=self.Page then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewSlider(n,d,a,b,v,c)end
-function Library.TabMethods:NewDropdown(n,d,o,c)if not CurrentSectionObject or CurrentSectionObject.Page.Parent~=self.Page then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewDropdown(n,d,o,c)end
-function Library.TabMethods:NewKeybind(n,d,k,c)if not CurrentSectionObject or CurrentSectionObject.Page.Parent~=self.Page then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewKeybind(n,d,k,c)end
-function Library.TabMethods:NewPlayerList(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Page.Parent~=self.Page then CurrentSectionObject=self:NewSection("PLAYERS")end;return CurrentSectionObject:NewPlayerList(n,d,c)end
+function Library.TabMethods:NewButton(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewButton(n,d,c)end
+function Library.TabMethods:NewToggle(n,d,c,v)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewToggle(n,d,c,v)end
+function Library.TabMethods:NewSlider(n,d,a,b,v,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewSlider(n,d,a,b,v,c)end
+function Library.TabMethods:NewDropdown(n,d,o,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewDropdown(n,d,o,c)end
+function Library.TabMethods:NewKeybind(n,d,k,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewKeybind(n,d,k,c)end
+function Library.TabMethods:NewPlayerList(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("PLAYERS")end;return CurrentSectionObject:NewPlayerList(n,d,c)end
 function Library.TabMethods:SetOrder(pos)
 	local cur
 	for i,n in ipairs(TabOrder)do if n==self.Name then cur=i break end end
@@ -714,11 +754,11 @@ UserInputService.InputBegan:Connect(function(i,processed)
 	if i.KeyCode==Library.Config.ToggleKey then Library:Toggle() end
 end)
 
-RunService.RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function(dt)
 	if not Gui.Parent then return end
 	local tm=TimeData()
 	ClockTop.Text=tm
-	local fps=math.floor(1/math.max(RunService.RenderStepped:Wait(),1/240))
+	local fps=math.floor(1/math.max(dt,1/240))
 	StatusText.Text="GAME  : CONNECTED\nUSER  : "..Player.Name.."\nFPS   : "..tostring(fps).."\nTIME  : "..tm
 end)
 
