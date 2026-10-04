@@ -159,17 +159,20 @@ Environment.Size=UDim2.new(1,0,0,20); Environment.Position=UDim2.new(0,0,0,126);
 local Welcome=Label(GreetingBox,"SESSION READY",9,C.Gray2)
 Welcome.Size=UDim2.new(1,0,0,20); Welcome.Position=UDim2.new(0,0,0,158); Welcome.TextXAlignment=Enum.TextXAlignment.Center
 
-local Menu=New("Frame",{Size=UDim2.fromOffset(1320,820),Position=UDim2.new(.5,-660,.5,-410),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
+local Menu=New("Frame",{Size=UDim2.new(.965,0,.93,0),Position=UDim2.new(.0175,0,.035,0),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
 Stroke(Menu,C.Line2,1,0)
 AddCornerMarks(Menu)
 AddGrid(Menu)
+local Scan=New("Frame",{Size=UDim2.new(1,0,0,1),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.White,BackgroundTransparency=.975,BorderSizePixel=0,ZIndex=2},Menu)
+task.spawn(function() while Menu.Parent do if Menu.Visible then Tween(Scan,{Position=UDim2.new(0,0,1,0)},2.8,Enum.EasingStyle.Linear);task.wait(2.8);Scan.Position=UDim2.new(0,0,0,0) else task.wait(.5) end end end)
+for i=1,28 do local s=math.random(1,2);New("Frame",{Size=UDim2.fromOffset(s,s),Position=UDim2.new(math.random(),0,math.random(),0),BackgroundColor3=C.White,BackgroundTransparency=math.random(94,98)/100,BorderSizePixel=0,ZIndex=2},Menu) end
 
 local Header=New("Frame",{Size=UDim2.new(1,0,0,66),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=30},Menu)
 New("Frame",{Size=UDim2.new(1,-2,0,1),Position=UDim2.new(0,1,1,-1),BackgroundColor3=C.Line2,BorderSizePixel=0,ZIndex=31},Header)
-local Title=Label(Header,"USURE",23,C.White)
-Title.Size=UDim2.fromOffset(170,30); Title.Position=UDim2.new(0,36,0,12)
-local Subtitle=Label(Header,"// PRIVATE BUILD",11,C.Gray)
-Subtitle.Size=UDim2.fromOffset(250,22); Subtitle.Position=UDim2.new(0,207,0,20)
+local Title=Label(Header,"USURE",30,C.White)
+Title.Size=UDim2.fromOffset(190,36); Title.Position=UDim2.new(0,36,0,9)
+local Subtitle=Label(Header,"// PRIVATE BUILD",12,C.Gray)
+Subtitle.Size=UDim2.fromOffset(280,24); Subtitle.Position=UDim2.new(0,218,0,20)
 local ClockTop=Label(Header,"00:00:00",11,C.White2)
 local VersionTop=Label(Header,"v1.0.0",9,C.Gray2)
 VersionTop.Size=UDim2.fromOffset(70,24); VersionTop.Position=UDim2.new(1,-318,0,20); VersionTop.TextXAlignment=Enum.TextXAlignment.Right
@@ -186,7 +189,7 @@ local MinButton=HeaderButton("—",-136)
 local MaxButton=HeaderButton("□",-92)
 local CloseButton=HeaderButton("×",-48)
 
-local Sidebar=New("Frame",{Size=UDim2.new(0,340,1,-88),Position=UDim2.new(0,14,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25},Menu)
+local Sidebar=New("Frame",{Size=UDim2.new(0,324,1,-88),Position=UDim2.new(0,14,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25},Menu)
 New("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=C.Line,BackgroundTransparency=.55,BorderSizePixel=0,ZIndex=25},Sidebar)
 local SideTitle=Label(Sidebar,"NAVIGATION",10,C.Gray2)
 SideTitle.Size=UDim2.new(1,-30,0,24); SideTitle.Position=UDim2.new(0,16,0,12)
@@ -196,20 +199,20 @@ local TabLayout=New("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrd
 
 local StatusBox=New("Frame",{Size=UDim2.new(1,-24,0,160),Position=UDim2.new(0,12,1,-172),BackgroundTransparency=1,ZIndex=26},Sidebar)
 New("Frame",{Size=UDim2.new(1,0,0,1),BackgroundColor3=C.Line2,BorderSizePixel=0},StatusBox)
-local StatusTitle=Label(StatusBox,"[ STATUS ]",10,C.White)
+local StatusTitle=Label(StatusBox,"[ STATUS ]",11,C.White)
 StatusTitle.Size=UDim2.new(1,-20,0,20); StatusTitle.Position=UDim2.new(0,10,0,12)
-local StatusText=Label(StatusBox,"",9,C.Gray)
+local StatusText=Label(StatusBox,"",11,C.Gray)
 StatusText.Size=UDim2.new(1,-20,0,105); StatusText.Position=UDim2.new(0,10,0,38)
 
-local Content=New("Frame",{Size=UDim2.new(1,-380,1,-88),Position=UDim2.new(0,366,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25,ClipsDescendants=true},Menu)
+local Content=New("Frame",{Size=UDim2.new(1,-354,1,-88),Position=UDim2.new(0,352,0,78),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25,ClipsDescendants=true},Menu)
 Stroke(Content,C.Line,1,0)
-local ContentHeader=New("Frame",{Size=UDim2.new(1,0,0,88),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=27},Content)
-local ContentTitle=Label(ContentHeader,"MAIN",28,C.White)
-ContentTitle.Size=UDim2.new(.7,0,0,40); ContentTitle.Position=UDim2.new(0,32,0,10)
-local ContentSubtitle=Label(ContentHeader,"// CORE FUNCTIONS",10,C.Gray)
-ContentSubtitle.Size=UDim2.new(.7,0,0,20); ContentSubtitle.Position=UDim2.new(0,34,0,51)
-local ContentRight=Label(ContentHeader,"[ USURE MENU ]",9,C.Gray2)
-ContentRight.Size=UDim2.new(.3,-24,0,22); ContentRight.Position=UDim2.new(.7,0,0,25); ContentRight.TextXAlignment=Enum.TextXAlignment.Right
+local ContentHeader=New("Frame",{Size=UDim2.new(1,0,0,100),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=27},Content)
+local ContentTitle=Label(ContentHeader,"MAIN",34,C.White)
+ContentTitle.Size=UDim2.new(.7,0,0,44); ContentTitle.Position=UDim2.new(0,32,0,10)
+local ContentSubtitle=Label(ContentHeader,"// CORE FUNCTIONS",11,C.Gray)
+ContentSubtitle.Size=UDim2.new(.7,0,0,20); ContentSubtitle.Position=UDim2.new(0,34,0,57)
+local ContentRight=Label(ContentHeader,"[ USURE MENU ]",10,C.Gray2)
+ContentRight.Size=UDim2.new(.3,-24,0,22); ContentRight.Position=UDim2.new(.7,0,0,30); ContentRight.TextXAlignment=Enum.TextXAlignment.Right
 New("Frame",{Size=UDim2.new(1,-2,0,1),Position=UDim2.new(0,1,1,-1),BackgroundColor3=C.Line2,BorderSizePixel=0},ContentHeader)
 
 local Pages={}
@@ -251,7 +254,7 @@ Library.Config={
 }
 
 local function CreatePage(name)
-	local page=New("ScrollingFrame",{Name=name,Size=UDim2.new(1,-28,1,-104),Position=UDim2.new(0,14,0,96),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,ScrollBarImageColor3=C.White,ScrollBarImageTransparency=.78,CanvasSize=UDim2.new(),ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false,ZIndex=28},Content)
+	local page=New("ScrollingFrame",{Name=name,Size=UDim2.new(1,-28,1,-116),Position=UDim2.new(0,14,0,108),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,ScrollBarImageColor3=C.White,ScrollBarImageTransparency=.78,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false,ZIndex=28},Content)
 	local left=New("Frame",{Name="LeftColumn",Size=UDim2.new(.5,-6,0,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1,ZIndex=29},page)
 	local right=New("Frame",{Name="RightColumn",Size=UDim2.new(.5,-6,0,0),Position=UDim2.new(.5,6,0,0),BackgroundTransparency=1,ZIndex=29},page)
 	local ll=New("UIListLayout",{Padding=UDim.new(0,14),SortOrder=Enum.SortOrder.LayoutOrder},left)
@@ -308,12 +311,12 @@ local function CreateTab(name,icon)
 	local page=CreatePage(name)
 	icon = icon or DefaultIcons[string.upper(tostring(name))] or ">"
 
-	local b=New("TextButton",{Size=UDim2.new(1,0,0,56),BackgroundColor3=C.Black,BorderSizePixel=0,Text="",AutoButtonColor=false,ZIndex=30},TabHolder)
+	local b=New("TextButton",{Size=UDim2.new(1,0,0,58),BackgroundColor3=C.Black,BorderSizePixel=0,Text="",AutoButtonColor=false,ZIndex=30},TabHolder)
 	local border=Stroke(b,C.Line,1,0)
 	local ind=New("Frame",{Size=UDim2.fromOffset(2,38),Position=UDim2.new(0,0,.5,-19),BackgroundColor3=C.White,BorderSizePixel=0,Visible=false,ZIndex=31},b)
-	local ico=Label(b,icon or ">",13,C.White2)
+	local ico=Label(b,icon or ">",17,C.White2)
 	ico.Size=UDim2.fromOffset(38,56); ico.Position=UDim2.new(0,12,0,0); ico.TextXAlignment=Enum.TextXAlignment.Center; ico.Visible=Library.Config.ShowIcons
-	local text=Label(b,name,13,C.Gray)
+	local text=Label(b,name,16,C.Gray)
 	text.Size=UDim2.new(1,-62,1,0); text.Position=UDim2.new(0,56,0,0)
 	local object={Name=name,Page=page,Sections={}}
 	Tabs[name]={Button=b,Text=text,Icon=ico,Indicator=ind,Border=border,Page=page,Object=object}
@@ -340,7 +343,7 @@ end
 
 local function MakeDragHandle(frame,element)
 	if not Library.Config.AllowReorder then return end
-	local h=New("TextButton",{Size=UDim2.fromOffset(18,28),Position=UDim2.new(0,2,.5,-14),BackgroundTransparency=1,Text="⋮",TextColor3=C.Gray3,TextSize=13,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=80},frame)
+	local h=New("TextButton",{Size=UDim2.fromOffset(18,28),Position=UDim2.new(0,2,.5,-14),BackgroundTransparency=1,Text="",TextColor3=C.Gray3,TextSize=13,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=80},frame)
 	local active=false
 	local startY=0
 	h.InputBegan:Connect(function(input)
@@ -393,12 +396,12 @@ local function CreateButton(section,title,description,callback)
 	local e={Frame=f,Section=section,Name=tostring(title)}
 	table.insert(section.Elements,e)
 	MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White)
+	local t=Label(f,title,16,C.White)
 	t.Size=UDim2.new(1,-150,0,22); t.Position=UDim2.new(0,30,(description and .1 or .25),0)
 	if description and tostring(description)~="" then
-		local d=Label(f,description,8,C.Gray2); d.Size=UDim2.new(1,-150,0,18); d.Position=UDim2.new(0,30,0,31)
+		local d=Label(f,description,10,C.Gray2); d.Size=UDim2.new(1,-150,0,18); d.Position=UDim2.new(0,30,0,31)
 	end
-	local b=New("TextButton",{Size=UDim2.fromOffset(110,32),Position=UDim2.new(1,-126,.5,-16),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text="EXECUTE",TextColor3=C.White,TextSize=9,Font=Enum.Font.Code,AutoButtonColor=false},f)
+	local b=New("TextButton",{Size=UDim2.fromOffset(126,34),Position=UDim2.new(1,-126,.5,-16),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text="EXECUTE",TextColor3=C.White,TextSize=11,Font=Enum.Font.Code,AutoButtonColor=false},f)
 	Stroke(b,C.Line2,1,0)
 	b.MouseEnter:Connect(function() b.BackgroundColor3=C.Panel4 end)
 	b.MouseLeave:Connect(function() b.BackgroundColor3=C.Panel3 end)
@@ -416,11 +419,11 @@ local function CreateToggle(section,title,description,callback,default)
 	local e={Frame=f,Section=section,Name=tostring(title)}
 	table.insert(section.Elements,e)
 	MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White); t.Size=UDim2.new(1,-100,0,22); t.Position=UDim2.new(0,30,description and 7 or 12,0)
-	if description and tostring(description)~="" then local d=Label(f,description,8,C.Gray2); d.Size=UDim2.new(1,-100,0,18); d.Position=UDim2.new(0,30,0,31) end
-	local sw=New("TextButton",{Size=UDim2.fromOffset(54,26),Position=UDim2.new(1,-70,.5,-13),BackgroundColor3=C.Panel4,BorderSizePixel=0,Text="",AutoButtonColor=false},f)
+	local t=Label(f,title,16,C.White); t.Size=UDim2.new(1,-100,0,22); t.Position=UDim2.new(0,30,description and 7 or 12,0)
+	if description and tostring(description)~="" then local d=Label(f,description,10,C.Gray2); d.Size=UDim2.new(1,-100,0,18); d.Position=UDim2.new(0,30,0,31) end
+	local sw=New("TextButton",{Size=UDim2.fromOffset(58,28),Position=UDim2.new(1,-70,.5,-13),BackgroundColor3=C.Panel4,BorderSizePixel=0,Text="",AutoButtonColor=false},f)
 	Stroke(sw,C.Line2,1,0)
-	local knob=New("Frame",{Size=UDim2.fromOffset(18,18),Position=UDim2.new(0,4,.5,-9),BackgroundColor3=C.Gray2,BorderSizePixel=0},sw)
+	local knob=New("Frame",{Size=UDim2.fromOffset(20,20),Position=UDim2.new(0,4,.5,-9),BackgroundColor3=C.Gray2,BorderSizePixel=0},sw)
 	Corner(knob,9)
 	local state=default==true
 	local function apply(anim)
@@ -445,7 +448,7 @@ local function CreateSlider(section,title,description,min,max,default,callback)
 	local e={Frame=f,Section=section,Name=tostring(title)}
 	table.insert(section.Elements,e)
 	MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White);t.Size=UDim2.new(.55,0,0,20);t.Position=UDim2.new(0,30,0,7)
+	local t=Label(f,title,16,C.White);t.Size=UDim2.new(.55,0,0,20);t.Position=UDim2.new(0,30,0,7)
 	local val=Label(f,tostring(default),10,C.White);val.Size=UDim2.fromOffset(70,20);val.Position=UDim2.new(1,-88,0,7);val.TextXAlignment=Enum.TextXAlignment.Right
 	local d=Label(f,description or "",8,C.Gray2);d.Size=UDim2.new(1,-60,0,16);d.Position=UDim2.new(0,30,0,29)
 	local bar=New("Frame",{Size=UDim2.new(1,-60,0,3),Position=UDim2.new(0,30,1,-14),BackgroundColor3=C.Panel4,BorderSizePixel=0},f)
@@ -473,16 +476,16 @@ local function CreateDropdown(section,title,description,options,callback)
 	if #options==0 then options={"NONE"} end
 	local f=ControlFrame(section,58);f.ClipsDescendants=false
 	local e={Frame=f,Section=section,Name=tostring(title)};table.insert(section.Elements,e);MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White);t.Size=UDim2.new(.5,0,0,20);t.Position=UDim2.new(0,30,0,7)
+	local t=Label(f,title,16,C.White);t.Size=UDim2.new(.5,0,0,20);t.Position=UDim2.new(0,30,0,7)
 	local d=Label(f,description or "",8,C.Gray2);d.Size=UDim2.new(.5,0,0,16);d.Position=UDim2.new(0,30,0,29)
-	local b=New("TextButton",{Size=UDim2.fromOffset(190,32),Position=UDim2.new(1,-205,.5,-16),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text=tostring(options[1]),TextColor3=C.White2,TextSize=9,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=60},f)
+	local b=New("TextButton",{Size=UDim2.fromOffset(260,34),Position=UDim2.new(1,-205,.5,-16),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text=tostring(options[1]),TextColor3=C.White2,TextSize=11,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=60},f)
 	Stroke(b,C.Line2,1,0)
 	local list=New("Frame",{Size=UDim2.new(1,0,0,#options*28),Position=UDim2.new(0,0,1,4),BackgroundColor3=C.Panel,BorderSizePixel=0,Visible=false,ZIndex=100},b)
 	Stroke(list,C.Line2,1,0)
 	New("UIListLayout",{Padding=UDim.new(0,1),SortOrder=Enum.SortOrder.LayoutOrder},list)
 	local selected=options[1]
 	for i,opt in ipairs(options) do
-		local o=New("TextButton",{Size=UDim2.new(1,0,0,27),BackgroundColor3=C.Panel2,BorderSizePixel=0,Text=tostring(opt),TextColor3=C.Gray,TextSize=9,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=101,LayoutOrder=i},list)
+		local o=New("TextButton",{Size=UDim2.new(1,0,0,27),BackgroundColor3=C.Panel2,BorderSizePixel=0,Text=tostring(opt),TextColor3=C.Gray,TextSize=11,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=101,LayoutOrder=i},list)
 		o.MouseEnter:Connect(function()o.BackgroundColor3=C.Panel4;o.TextColor3=C.White end)
 		o.MouseLeave:Connect(function()o.BackgroundColor3=C.Panel2;o.TextColor3=C.Gray end)
 		o.MouseButton1Click:Connect(function()selected=opt;b.Text=tostring(opt);list.Visible=false;if callback then callback(selected) end end)
@@ -498,9 +501,9 @@ end
 local function CreateKeybind(section,title,description,key,callback)
 	local f=ControlFrame(section,56)
 	local e={Frame=f,Section=section,Name=tostring(title)};table.insert(section.Elements,e);MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White);t.Size=UDim2.new(.5,0,0,20);t.Position=UDim2.new(0,30,0,7)
+	local t=Label(f,title,16,C.White);t.Size=UDim2.new(.5,0,0,20);t.Position=UDim2.new(0,30,0,7)
 	local d=Label(f,description or "",8,C.Gray2);d.Size=UDim2.new(.5,0,0,17);d.Position=UDim2.new(0,30,0,29)
-	local b=New("TextButton",{Size=UDim2.fromOffset(150,30),Position=UDim2.new(1,-165,.5,-15),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text=key and key.Name or "NONE",TextColor3=C.White,TextSize=9,Font=Enum.Font.Code,AutoButtonColor=false},f);Stroke(b,C.Line2,1,0)
+	local b=New("TextButton",{Size=UDim2.fromOffset(150,30),Position=UDim2.new(1,-165,.5,-15),BackgroundColor3=C.Panel3,BorderSizePixel=0,Text=key and key.Name or "NONE",TextColor3=C.White,TextSize=11,Font=Enum.Font.Code,AutoButtonColor=false},f);Stroke(b,C.Line2,1,0)
 	local current=key or Enum.KeyCode.Unknown;local listening=false
 	b.MouseButton1Click:Connect(function()
 		if listening then return end
@@ -521,7 +524,7 @@ end
 local function CreatePlayerList(section,title,description,callback)
 	local f=ControlFrame(section,64);f.ClipsDescendants=false
 	local e={Frame=f,Section=section,Name=tostring(title)};table.insert(section.Elements,e);MakeDragHandle(f,e)
-	local t=Label(f,title,11,C.White);t.Size=UDim2.new(1,-30,0,20);t.Position=UDim2.new(0,30,0,7)
+	local t=Label(f,title,16,C.White);t.Size=UDim2.new(1,-30,0,20);t.Position=UDim2.new(0,30,0,7)
 	local d=Label(f,description or "",8,C.Gray2);d.Size=UDim2.new(1,-30,0,17);d.Position=UDim2.new(0,30,0,30)
 	local list=New("Frame",{Size=UDim2.new(1,-30,0,0),Position=UDim2.new(0,15,1,4),BackgroundTransparency=1},f)
 	local layout=New("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.Name},list)
@@ -529,7 +532,7 @@ local function CreatePlayerList(section,title,description,callback)
 		for _,c in ipairs(list:GetChildren())do if c:IsA("TextButton")then c:Destroy()end end
 		for _,p in ipairs(Players:GetPlayers())do
 			if p~=Player then
-				local b=New("TextButton",{Size=UDim2.new(1,0,0,30),BackgroundColor3=C.Panel2,BorderSizePixel=0,Text=p.DisplayName.."  @"..p.Name,TextColor3=C.Gray,TextSize=9,Font=Enum.Font.Code,AutoButtonColor=false},list);Stroke(b,C.Line,1,0)
+				local b=New("TextButton",{Size=UDim2.new(1,0,0,30),BackgroundColor3=C.Panel2,BorderSizePixel=0,Text=p.DisplayName.."  @"..p.Name,TextColor3=C.Gray,TextSize=11,Font=Enum.Font.Code,AutoButtonColor=false},list);Stroke(b,C.Line,1,0)
 				b.MouseEnter:Connect(function()b.BackgroundColor3=C.Panel4;b.TextColor3=C.White end);b.MouseLeave:Connect(function()b.BackgroundColor3=C.Panel2;b.TextColor3=C.Gray end)
 				b.MouseButton1Click:Connect(function()if callback then callback(p)end end)
 			end
@@ -591,32 +594,27 @@ function SectionMethods:Move(name,pos)
 end
 
 function Library.TabMethods:NewSection(title,rightText)
-	local holder=New("Frame",{Size=UDim2.new(1,0,0,44),BackgroundColor3=C.Black2,BorderSizePixel=0,LayoutOrder=#self.Sections+1,ZIndex=31},PageColumns[self.Name].Left)
+	local holder=New("Frame",{Size=UDim2.new(1,0,0,52),BackgroundColor3=C.Black2,BorderSizePixel=0,LayoutOrder=#self.Sections+1,ZIndex=31},PageColumns[self.Name].Left)
 	Stroke(holder,C.Line2,1,0)
-	local corner=New("Frame",{Size=UDim2.fromOffset(8,1),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
-	local corner2=New("Frame",{Size=UDim2.fromOffset(1,8),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
-	local corner3=New("Frame",{Size=UDim2.fromOffset(8,1),Position=UDim2.new(1,-8,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
-	local corner4=New("Frame",{Size=UDim2.fromOffset(1,8),Position=UDim2.new(1,-1,0,0),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder)
-	local head=New("Frame",{Size=UDim2.new(1,0,0,44),BackgroundTransparency=1,ZIndex=32},holder)
-	local titleLabel=Label(head,"[  "..string.upper(tostring(title or "SECTION")).."  ]",12,C.White);titleLabel.Size=UDim2.new(.7,0,1,0);titleLabel.Position=UDim2.new(0,18,0,0)
-	if rightText then local r=Label(head,rightText,8,C.Gray2);r.Size=UDim2.new(.3,-18,1,0);r.Position=UDim2.new(.7,0,0,0);r.TextXAlignment=Enum.TextXAlignment.Right end
-	New("Frame",{Size=UDim2.new(1,-28,0,1),Position=UDim2.new(0,14,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0,ZIndex=32},head)
-	local page=New("Frame",{Size=UDim2.new(1,-28,0,0),Position=UDim2.new(0,14,0,48),BackgroundTransparency=1,ZIndex=32},holder)
+	for _,q in ipairs({{{0,0,0,0},{12,1}},{{0,0,0,0},{1,12}},{{1,-12,0,0},{12,1}},{{1,-1,0,0},{1,12}},{{0,0,1,-1},{12,1}},{{0,0,1,-12},{1,12}},{{1,-12,1,-1},{12,1}},{{1,-1,1,-12},{1,12}}}) do New("Frame",{Size=UDim2.fromOffset(q[2][1],q[2][2]),Position=UDim2.new(q[1][1],q[1][2],q[1][3],q[1][4]),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder) end
+	local head=New("Frame",{Size=UDim2.new(1,0,0,52),BackgroundTransparency=1,ZIndex=32},holder)
+	local titleLabel=Label(head,"[  "..string.upper(tostring(title or "SECTION")).."  ]",16,C.White);titleLabel.Size=UDim2.new(.7,0,1,0);titleLabel.Position=UDim2.new(0,20,0,0)
+	if rightText then local r=Label(head,rightText,10,C.Gray2);r.Size=UDim2.new(.3,-20,1,0);r.Position=UDim2.new(.7,0,0,0);r.TextXAlignment=Enum.TextXAlignment.Right end
+	New("Frame",{Size=UDim2.new(1,-32,0,1),Position=UDim2.new(0,16,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0,ZIndex=32},head)
+	local page=New("Frame",{Size=UDim2.new(1,-32,0,0),Position=UDim2.new(0,16,0,56),BackgroundTransparency=1,ZIndex=32},holder)
 	local layout=New("UIListLayout",{Padding=UDim.new(0,0),SortOrder=Enum.SortOrder.LayoutOrder},page)
 	local section={Name=tostring(title or "SECTION"),Frame=holder,Page=page,Elements={},Layout=layout,Tab=self}
-	setmetatable(section,{__index=SectionMethods})
-	table.insert(self.Sections,section)
-	local function resize()
-		page.Size=UDim2.new(1,-28,0,layout.AbsoluteContentSize.Y)
-		holder.Size=UDim2.new(1,0,0,48+layout.AbsoluteContentSize.Y)
-	end
+	setmetatable(section,{__index=SectionMethods});table.insert(self.Sections,section)
+	local function resize() page.Size=UDim2.new(1,-32,0,layout.AbsoluteContentSize.Y);holder.Size=UDim2.new(1,0,0,56+layout.AbsoluteContentSize.Y) end
 	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(resize)
-	if (#self.Sections % 2)==1 then holder.Parent=PageColumns[self.Name].Left else holder.Parent=PageColumns[self.Name].Right end
-	resize()
-	CurrentSectionObject=section;CurrentTabObject=self
-	return section
+	local function relayout()
+		local left=PageColumns[self.Name].Left;local right=PageColumns[self.Name].Right
+		if #self.Sections==1 then holder.Parent=left else for i,s in ipairs(self.Sections) do local parent=(i%2==1) and left or right;if s.Frame.Parent~=parent then s.Frame.Parent=parent end;s.Frame.LayoutOrder=i end end
+		left.Size=UDim2.new(.5,-6,0,left.UIListLayout.AbsoluteContentSize.Y);right.Size=UDim2.new(.5,-6,0,right.UIListLayout.AbsoluteContentSize.Y)
+	end
+	resize();relayout();task.defer(relayout)
+	CurrentSectionObject=section;CurrentTabObject=self;return section
 end
-
 function Library.TabMethods:NewButton(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewButton(n,d,c)end
 function Library.TabMethods:NewToggle(n,d,c,v)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewToggle(n,d,c,v)end
 function Library.TabMethods:NewSlider(n,d,a,b,v,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewSlider(n,d,a,b,v,c)end
@@ -731,7 +729,7 @@ CloseButton.MouseButton1Click:Connect(function()Library:Destroy()end)
 MaxButton.MouseButton1Click:Connect(function()
 	Maxed=not Maxed
 	if Maxed then Menu.Size=UDim2.new(1,-40,1,-40);Menu.Position=UDim2.new(0,20,0,20)
-	else Menu.Size=UDim2.fromOffset(Library.Config.Width,Library.Config.Height);Menu.Position=UDim2.new(.5,-Library.Config.Width/2,.5,-Library.Config.Height/2)end
+	else Menu.Size=UDim2.new(.965,0,.93,0);Menu.Position=UDim2.new(.0175,0,.035,0)end
 end)
 
 Header.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 then Dragging=true;DragStart=i.Position;StartPosition=Menu.Position end end)
