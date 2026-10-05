@@ -159,7 +159,7 @@ Environment.Size=UDim2.new(1,0,0,20); Environment.Position=UDim2.new(0,0,0,126);
 local Welcome=Label(GreetingBox,"SESSION READY",9,C.Gray2)
 Welcome.Size=UDim2.new(1,0,0,20); Welcome.Position=UDim2.new(0,0,0,158); Welcome.TextXAlignment=Enum.TextXAlignment.Center
 
-local Menu=New("Frame",{Size=UDim2.fromOffset(760,500),Position=UDim2.new(.5,-380,.5,-250),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
+local Menu=New("Frame",{Size=UDim2.fromOffset(820,540),Position=UDim2.new(.5,-410,.5,-270),BackgroundColor3=C.Black,BorderSizePixel=0,Visible=false,ClipsDescendants=false,ZIndex=20},Gui)
 Stroke(Menu,C.Line2,1,0)
 AddCornerMarks(Menu)
 AddGrid(Menu)
@@ -170,15 +170,17 @@ for i=1,28 do local s=math.random(1,2);New("Frame",{Size=UDim2.fromOffset(s,s),P
 local Header=New("Frame",{Size=UDim2.new(1,0,0,48),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=30},Menu)
 New("Frame",{Size=UDim2.new(1,-2,0,1),Position=UDim2.new(0,1,1,-1),BackgroundColor3=C.Line2,BorderSizePixel=0,ZIndex=31},Header)
 local Title=Label(Header,"USURE",30,C.White)
-Title.Size=UDim2.fromOffset(150,30); Title.Position=UDim2.new(0,24,0,5)
-local Subtitle=Label(Header,"// PRIVATE BUILD",12,C.Gray)
-Subtitle.Size=UDim2.fromOffset(210,20); Subtitle.Position=UDim2.new(0,174,0,14)
-New("Frame",{Size=UDim2.new(0,1,1,-18),Position=UDim2.new(1,-220,0,7),BackgroundColor3=C.Line2,BorderSizePixel=0,ZIndex=31},Header)
+Title.Size=UDim2.fromOffset(360,30); Title.Position=UDim2.new(0,24,0,5)
+local Subtitle=Label(Header,"",1,C.Black)
+Subtitle.Visible=false
+Subtitle.Size=UDim2.fromOffset(0,0)
+Subtitle.Position=UDim2.fromOffset(0,0)
+New("Frame",{Size=UDim2.new(0,1,1,-18),Position=UDim2.new(1,-150,0,7),BackgroundColor3=C.Line2,BorderSizePixel=0,ZIndex=31},Header)
 local ClockTop=Label(Header,"00:00:00",11,C.White2)
 local VersionTop=Label(Header,"v1.0.0",9,C.Gray2)
-VersionTop.Size=UDim2.fromOffset(70,24); VersionTop.Position=UDim2.new(1,-210,0,13); VersionTop.TextXAlignment=Enum.TextXAlignment.Right
-ClockTop.Size=UDim2.fromOffset(90,24); ClockTop.Position=UDim2.new(1,-150,0,13); ClockTop.TextXAlignment=Enum.TextXAlignment.Right
-New("Frame",{Size=UDim2.fromOffset(1,24),Position=UDim2.new(1,-104,0,12),BackgroundColor3=C.Line2,BorderSizePixel=0},Header)
+VersionTop.Size=UDim2.fromOffset(58,24); VersionTop.Position=UDim2.new(1,-340,0,13); VersionTop.TextXAlignment=Enum.TextXAlignment.Right
+ClockTop.Size=UDim2.fromOffset(92,24); ClockTop.Position=UDim2.new(1,-235,0,13); ClockTop.TextXAlignment=Enum.TextXAlignment.Right
+New("Frame",{Size=UDim2.fromOffset(1,24),Position=UDim2.new(1,-150,0,12),BackgroundColor3=C.Line2,BorderSizePixel=0},Header)
 
 local function HeaderButton(text,x)
 	local b=New("TextButton",{Size=UDim2.fromOffset(34,28),Position=UDim2.new(1,x,0,10),BackgroundTransparency=1,BorderSizePixel=0,Text=text,TextColor3=C.White2,TextSize=15,Font=Enum.Font.Code,AutoButtonColor=false,ZIndex=35},Header)
@@ -186,24 +188,24 @@ local function HeaderButton(text,x)
 	b.MouseLeave:Connect(function() b.TextColor3=C.White2 end)
 	return b
 end
-local MinButton=HeaderButton("—",-102)
-local MaxButton=HeaderButton("□",-68)
-local CloseButton=HeaderButton("×",-34)
+local MinButton=HeaderButton("—",-126)
+local MaxButton=HeaderButton("□",-86)
+local CloseButton=HeaderButton("×",-46)
 
 local Sidebar=New("Frame",{Size=UDim2.new(0,190,1,-62),Position=UDim2.new(0,10,0,52),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25},Menu)
 New("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=C.Black,BackgroundTransparency=0,BorderSizePixel=0,ZIndex=25},Sidebar)
 local SideTitle=Label(Sidebar,"NAVIGATION",10,C.Gray2)
 SideTitle.Size=UDim2.new(1,-24,0,20); SideTitle.Position=UDim2.new(0,12,0,8)
 New("Frame",{Size=UDim2.new(1,-24,0,1),Position=UDim2.new(0,12,0,32),BackgroundColor3=C.Line,BorderSizePixel=0},Sidebar)
-local TabHolder=New("Frame",{Size=UDim2.new(1,-18,1,-132),Position=UDim2.new(0,9,0,42),BackgroundTransparency=1,ZIndex=26},Sidebar)
+local TabHolder=New("Frame",{Size=UDim2.new(1,-18,1,-174),Position=UDim2.new(0,9,0,42),BackgroundTransparency=1,ZIndex=26},Sidebar)
 local TabLayout=New("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},TabHolder)
 
-local StatusBox=New("Frame",{Size=UDim2.new(1,-18,0,108),Position=UDim2.new(0,9,1,-116),BackgroundTransparency=1,ZIndex=26},Sidebar)
+local StatusBox=New("Frame",{Size=UDim2.new(1,-18,0,96),Position=UDim2.new(0,9,1,-104),BackgroundTransparency=1,ZIndex=26},Sidebar)
 New("Frame",{Size=UDim2.new(1,0,0,1),BackgroundColor3=C.Line2,BorderSizePixel=0},StatusBox)
 local StatusTitle=Label(StatusBox,"[ STATUS ]",11,C.White)
 StatusTitle.Size=UDim2.new(1,-20,0,20); StatusTitle.Position=UDim2.new(0,10,0,12)
 local StatusText=Label(StatusBox,"",11,C.Gray)
-StatusText.Size=UDim2.new(1,-20,0,105); StatusText.Position=UDim2.new(0,10,0,38)
+StatusText.Size=UDim2.new(1,-20,0,56); StatusText.Position=UDim2.new(0,10,0,36)
 
 local Content=New("Frame",{Size=UDim2.new(1,-354,1,-82),Position=UDim2.new(0,352,0,72),BackgroundColor3=C.Black,BorderSizePixel=0,ZIndex=25,ClipsDescendants=true},Menu)
 Stroke(Content,C.Line,1,0)
@@ -250,12 +252,12 @@ Library.Config={
 	Animate=true,
 	ToggleKey=Enum.KeyCode.RightShift,
 	UseAltToggle=true,
-	Width=760,
-	Height=500,
-	MinWidth=560,
-	MinHeight=380,
-	MaxWidth=1400,
-	MaxHeight=900
+	Width=820,
+	Height=540,
+	MinWidth=700,
+	MinHeight=460,
+	MaxWidth=1200,
+	MaxHeight=780
 }
 
 local function CreatePage(name)
@@ -946,7 +948,7 @@ end)
 function Library:CreateLib(title,theme)
 	if WindowObject then return WindowObject end
 	Title.Text=tostring(title or "USURE")
-	Subtitle.Text="// "..tostring(theme or "PRIVATE BUILD")
+	Subtitle.Text=""
 	WindowObject=self
 	return self
 end
