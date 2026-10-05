@@ -748,14 +748,35 @@ local function RebalanceTabCategories(tab)
 	local left=columns:FindFirstChild("LeftColumn")
 	local right=columns:FindFirstChild("RightColumn")
 	if not left or not right then return end
-	for _,section in ipairs(tab.Sections) do
+
+	for index,section in ipairs(tab.Sections) do
 		local target
-		local lh=left.AbsoluteSize.Y
-		local rh=right.AbsoluteSize.Y
-		if lh<=rh then target=left else target=right end
-		if section.Frame and section.Frame.Parent~=target then section.Frame.Parent=target end
+		if index%2==1 then
+			target=left
+		else
+			target=right
+		end
+		if section.Frame then
+			section.Frame.LayoutOrder=math.ceil(index/2)
+			if section.Frame.Parent~=target then
+				section.Frame.Parent=target
+			end
+		end
 		section.Column=target
 	end
+
+	left.Size=UDim2.new(.5,-9,0,0)
+	right.Size=UDim2.new(.5,-9,0,0)
+
+	local ll=left:FindFirstChildOfClass("UIListLayout")
+	local rl=right:FindFirstChildOfClass("UIListLayout")
+	if ll then
+		left.Size=UDim2.new(.5,-9,0,ll.AbsoluteContentSize.Y)
+	end
+	if rl then
+		right.Size=UDim2.new(.5,-9,0,rl.AbsoluteContentSize.Y)
+	end
+	UpdatePageCanvas(page)
 end
 
 function SectionMethods:Reflow()
@@ -777,8 +798,8 @@ function Library.TabMethods:NewSection(title,rightText)
 	local columns=page:FindFirstChild("Columns")
 	local left=columns.LeftColumn
 	local right=columns.RightColumn
-	local target
-	if left.AbsoluteSize.Y<=right.AbsoluteSize.Y then target=left else target=right end
+	local nextIndex=#self.Sections+1
+	local target=(nextIndex%2==1) and left or right
 	local section={Name=tostring(title or "CATEGORY"),Column=target,Page=nil,Frame=nil,Elements={},Sections=self.Sections,TabPage=page}
 	setmetatable(section,{__index=SectionMethods})
 	local category=CreateCategory(section,title,rightText)
