@@ -255,20 +255,38 @@ Library.Config={
 }
 
 local function CreatePage(name)
-	local page=New("ScrollingFrame",{Name=name,Size=UDim2.new(1,-28,1,-116),Position=UDim2.new(0,14,0,108),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,ScrollBarImageColor3=C.White,ScrollBarImageTransparency=.78,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false,ZIndex=28},Content)
-	local left=New("Frame",{Name="LeftColumn",Size=UDim2.new(.5,-6,0,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1,ZIndex=29},page)
-	local right=New("Frame",{Name="RightColumn",Size=UDim2.new(.5,-7,0,0),Position=UDim2.new(.5,7,0,0),BackgroundTransparency=1,ZIndex=29,Visible=false},page)
-	local ll=New("UIListLayout",{Padding=UDim.new(0,14),SortOrder=Enum.SortOrder.LayoutOrder},left)
-	local rl=New("UIListLayout",{Padding=UDim.new(0,14),SortOrder=Enum.SortOrder.LayoutOrder},right)
+	local page=New("ScrollingFrame",{
+		Name=name,
+		Size=UDim2.new(1,-28,1,-116),
+		Position=UDim2.new(0,14,0,108),
+		BackgroundTransparency=1,
+		BorderSizePixel=0,
+		ScrollBarThickness=2,
+		ScrollBarImageColor3=C.White,
+		ScrollBarImageTransparency=.72,
+		CanvasSize=UDim2.fromOffset(0,0),
+		AutomaticCanvasSize=Enum.AutomaticSize.None,
+		ScrollingDirection=Enum.ScrollingDirection.Y,
+		Visible=false,
+		ZIndex=28,
+		ClipsDescendants=true
+	},Content)
+	local left=New("Frame",{Name="LeftColumn",Size=UDim2.new(.5,-8,0,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1,ZIndex=29},page)
+	local right=New("Frame",{Name="RightColumn",Size=UDim2.new(.5,-8,0,0),Position=UDim2.new(.5,8,0,0),BackgroundTransparency=1,ZIndex=29,Visible=false},page)
+	local ll=New("UIListLayout",{Padding=UDim.new(0,16),SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center},left)
+	local rl=New("UIListLayout",{Padding=UDim.new(0,16),SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center},right)
 	local function update()
-		local h=math.max(ll.AbsoluteContentSize.Y,rl.AbsoluteContentSize.Y)
+		local leftHeight=ll.AbsoluteContentSize.Y
+		local rightHeight=rl.AbsoluteContentSize.Y
+		local h=right.Visible and math.max(leftHeight,rightHeight) or leftHeight
 		if right.Visible then
-			left.Size=UDim2.new(.5,-7,0,ll.AbsoluteContentSize.Y)
-			right.Size=UDim2.new(.5,-7,0,rl.AbsoluteContentSize.Y)
+			left.Size=UDim2.new(.5,-8,0,leftHeight)
+			right.Size=UDim2.new(.5,-8,0,rightHeight)
 		else
-			left.Size=UDim2.new(1,0,0,ll.AbsoluteContentSize.Y)
+			left.Size=UDim2.new(1,0,0,leftHeight)
+			right.Size=UDim2.new(.5,-8,0,0)
 		end
-		page.CanvasSize=UDim2.fromOffset(0,h+24)
+		page.CanvasSize=UDim2.fromOffset(0,math.max(h,0)+20)
 	end
 	ll:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(update)
 	rl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(update)
@@ -357,7 +375,12 @@ Library.TabMethods={}
 
 local function RebuildElements(section)
 	for i,e in ipairs(section.Elements) do
-		if e.Frame and e.Frame.Parent then e.Frame.LayoutOrder=i end
+		if e.Frame and e.Frame.Parent then
+			e.Frame.LayoutOrder=i
+		end
+	end
+	if section and section.Resize then
+		task.defer(section.Resize)
 	end
 end
 
@@ -643,57 +666,104 @@ function SectionMethods:Move(name,pos)
 end
 
 function Library.TabMethods:NewSection(title,rightText)
-	local holder=New("Frame",{Size=UDim2.new(1,0,0,52),BackgroundColor3=C.Black2,BorderSizePixel=0,ClipsDescendants=false,AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=#self.Sections+1,ZIndex=31},PageColumns[self.Name].Left)
-	Stroke(holder,C.Line2,1,0)
-	for _,q in ipairs({{{0,0,0,0},{12,1}},{{0,0,0,0},{1,12}},{{1,-12,0,0},{12,1}},{{1,-1,0,0},{1,12}},{{0,0,1,-1},{12,1}},{{0,0,1,-12},{1,12}},{{1,-12,1,-1},{12,1}},{{1,-1,1,-12},{1,12}}}) do New("Frame",{Size=UDim2.fromOffset(q[2][1],q[2][2]),Position=UDim2.new(q[1][1],q[1][2],q[1][3],q[1][4]),BackgroundColor3=C.White,BorderSizePixel=0,ZIndex=33},holder) end
-	local head=New("Frame",{Size=UDim2.new(1,0,0,52),BackgroundTransparency=1,ZIndex=32},holder)
-	local sectionName=string.upper(tostring(title or "SECTION"))
-	local sectionCaption=(sectionName=="MAIN") and "MAIN" or "[  "..sectionName.."  ]"
-	local titleLabel=Label(head,sectionCaption,18,C.White);titleLabel.Size=UDim2.new(.7,0,1,0);titleLabel.Position=UDim2.new(0,20,0,0)
-	if rightText then local r=Label(head,rightText,10,C.Gray2);r.Size=UDim2.new(.3,-20,1,0);r.Position=UDim2.new(.7,0,0,0);r.TextXAlignment=Enum.TextXAlignment.Right end
-	New("Frame",{Size=UDim2.new(1,-32,0,1),Position=UDim2.new(0,16,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0,ZIndex=32},head)
-	local page=New("Frame",{Size=UDim2.new(1,-32,0,0),Position=UDim2.new(0,16,0,56),BackgroundTransparency=1,AutomaticSize=Enum.AutomaticSize.Y,ClipsDescendants=false,ZIndex=32},holder)
-	local layout=New("UIListLayout",{Padding=UDim.new(0,0),SortOrder=Enum.SortOrder.LayoutOrder},page)
-	local section={Name=tostring(title or "SECTION"),Frame=holder,Page=page,Elements={},Layout=layout,Tab=self}
-	setmetatable(section,{__index=SectionMethods});table.insert(self.Sections,section)
-	local function resize()
-		page.Size=UDim2.new(1,-32,0,layout.AbsoluteContentSize.Y)
-		holder.Size=UDim2.new(1,0,0,56+layout.AbsoluteContentSize.Y)
-		holder.AutomaticSize=Enum.AutomaticSize.None
-		task.defer(function()
-			if PageColumns[self.Name] and PageColumns[self.Name].Update then PageColumns[self.Name].Update() end
-		end)
+	local columns=PageColumns[self.Name]
+	local sectionName=tostring(title or "SECTION")
+	local holder=New("Frame",{
+		Size=UDim2.new(1,0,0,58),
+		BackgroundColor3=C.Black,
+		BorderSizePixel=0,
+		ClipsDescendants=false,
+		AutomaticSize=Enum.AutomaticSize.None,
+		LayoutOrder=#self.Sections+1,
+		ZIndex=31
+	},columns.Left)
+	Stroke(holder,C.White,1,0)
+	for _,q in ipairs({
+		{{0,0,0,0},{14,1}},{{0,0,0,0},{1,14}},
+		{{1,-14,0,0},{14,1}},{{1,-1,0,0},{1,14}},
+		{{0,0,1,-1},{14,1}},{{0,0,1,-14},{1,14}},
+		{{1,-14,1,-1},{14,1}},{{1,-1,1,-14},{1,14}}
+	}) do
+		New("Frame",{
+			Size=UDim2.fromOffset(q[2][1],q[2][2]),
+			Position=UDim2.new(q[1][1],q[1][2],q[1][3],q[1][4]),
+			BackgroundColor3=C.White,
+			BorderSizePixel=0,
+			ZIndex=34
+		},holder)
 	end
+	local head=New("Frame",{Size=UDim2.new(1,0,0,54),BackgroundTransparency=1,ZIndex=32},holder)
+	local sectionCaption=(string.upper(sectionName)=="MAIN") and "MAIN" or "[  "..string.upper(sectionName).."  ]"
+	local titleLabel=Label(head,sectionCaption,18,C.White)
+	titleLabel.Size=UDim2.new(.7,0,1,0)
+	titleLabel.Position=UDim2.new(0,20,0,0)
+	if rightText then
+		local r=Label(head,rightText,10,C.Gray2)
+		r.Size=UDim2.new(.3,-20,1,0)
+		r.Position=UDim2.new(.7,0,0,0)
+		r.TextXAlignment=Enum.TextXAlignment.Right
+	end
+	New("Frame",{Size=UDim2.new(1,-32,0,1),Position=UDim2.new(0,16,1,-1),BackgroundColor3=C.Line,BorderSizePixel=0,ZIndex=32},head)
+	local page=New("Frame",{
+		Size=UDim2.new(1,-32,0,0),
+		Position=UDim2.new(0,16,0,58),
+		BackgroundTransparency=1,
+		AutomaticSize=Enum.AutomaticSize.None,
+		ClipsDescendants=false,
+		ZIndex=32
+	},holder)
+	local layout=New("UIListLayout",{
+		Padding=UDim.new(0,0),
+		SortOrder=Enum.SortOrder.LayoutOrder,
+		HorizontalAlignment=Enum.HorizontalAlignment.Center
+	},page)
+	local section={Name=sectionName,Frame=holder,Page=page,Elements={},Layout=layout,Tab=self}
+	setmetatable(section,{__index=SectionMethods})
+	table.insert(self.Sections,section)
+
+	local function resize()
+		local contentHeight=layout.AbsoluteContentSize.Y
+		page.Size=UDim2.new(1,-32,0,contentHeight)
+		holder.Size=UDim2.new(1,0,0,58+contentHeight)
+		if columns and columns.Update then
+			task.defer(columns.Update)
+		end
+	end
+	section.Resize=resize
 	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(resize)
+
 	local function relayout()
-		local columns=PageColumns[self.Name]
+		if not columns then return end
 		local left=columns.Left
 		local right=columns.Right
 		local count=#self.Sections
+
 		if count<=1 then
-			holder.Parent=left
-			holder.Size=UDim2.new(1,0,0,56+layout.AbsoluteContentSize.Y)
-			left.Size=UDim2.new(1,0,0,holder.AbsoluteSize.Y)
 			right.Visible=false
+			holder.Parent=left
+			holder.Size=UDim2.new(1,0,0,58+layout.AbsoluteContentSize.Y)
 		else
 			right.Visible=true
 			for i,sct in ipairs(self.Sections) do
 				local parent=(i%2==1) and left or right
-				if sct.Frame.Parent~=parent then sct.Frame.Parent=parent end
+				if sct.Frame.Parent~=parent then
+					sct.Frame.Parent=parent
+				end
 				sct.Frame.LayoutOrder=i
-				sct.Frame.Size=UDim2.new(1,0,0,56+sct.Layout.AbsoluteContentSize.Y)
+				if sct.Resize then sct.Resize() end
 			end
-			local lh=left.UIListLayout.AbsoluteContentSize.Y
-			local rh=right.UIListLayout.AbsoluteContentSize.Y
-			left.Size=UDim2.new(.5,-7,0,lh)
-			right.Size=UDim2.new(.5,-7,0,rh)
 		end
-		if columns.Update then columns.Update() end
+		columns.Update()
 	end
 
-	resize();relayout();task.defer(relayout)
-	CurrentSectionObject=section;CurrentTabObject=self;return section
+	resize()
+	relayout()
+	task.defer(relayout)
+	CurrentSectionObject=section
+	CurrentTabObject=self
+	return section
 end
+
 function Library.TabMethods:NewButton(n,d,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewButton(n,d,c)end
 function Library.TabMethods:NewToggle(n,d,c,v)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewToggle(n,d,c,v)end
 function Library.TabMethods:NewSlider(n,d,a,b,v,c)if not CurrentSectionObject or CurrentSectionObject.Tab~=self then CurrentSectionObject=self:NewSection("MAIN")end;return CurrentSectionObject:NewSlider(n,d,a,b,v,c)end
