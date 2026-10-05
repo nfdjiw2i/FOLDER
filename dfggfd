@@ -475,100 +475,128 @@ end
 local function CreateSlider(section,title,description,min,max,default,callback)
 	min=tonumber(min) or 0
 	max=tonumber(max) or 100
-	default=tonumber(default) or min
 	if max<=min then max=min+1 end
+	default=math.clamp(tonumber(default) or min,min,max)
+
 	local f=ControlFrame(section,82)
-	local e={Frame=f,Section=section,Name=tostring(title),Dragging=false}
+	local e={Frame=f,Section=section,Name=tostring(title or "SLIDER"),Dragging=false}
 	table.insert(section.Elements,e)
 	MakeDragHandle(f,e)
+
 	local t=Label(f,(title and tostring(title)~="" and tostring(title) or "SLIDER"),11,C.White)
-	t.Size=UDim2.new(1,-180,0,22)
+	t.Size=UDim2.new(1,-130,0,22)
 	t.Position=UDim2.new(0,30,0,7)
+
 	local val=Label(f,tostring(default),10,C.White)
-	val.Size=UDim2.fromOffset(60,22)
+	val.Size=UDim2.fromOffset(70,22)
 	val.Position=UDim2.new(1,-100,0,7)
 	val.TextXAlignment=Enum.TextXAlignment.Right
+
 	if description and tostring(description)~="" then
-		local d=Label(f,description,8,C.Gray)
-		d.Size=UDim2.new(1,-180,0,16)
-		d.Position=UDim2.new(0,30,0,27)
+		local d=Label(f,tostring(description),8,C.Gray)
+		d.Size=UDim2.new(1,-60,0,16)
+		d.Position=UDim2.new(0,30,0,28)
 	end
-	local bar=New("Frame",{
-		Size=UDim2.new(1,-60,0,5),
+
+	local bar=New("TextButton",{
+		Size=UDim2.new(1,-60,0,6),
 		Position=UDim2.new(0,30,1,-20),
 		BackgroundColor3=C.Gray3,
 		BorderSizePixel=0,
-		ZIndex=55,
-		Active=true
+		Text="",
+		AutoButtonColor=false,
+		Active=true,
+		ZIndex=55
 	},f)
 	Corner(bar,3)
+
 	local fill=New("Frame",{
 		Size=UDim2.new(0,0,1,0),
 		BackgroundColor3=C.White,
 		BorderSizePixel=0,
+		Active=false,
 		ZIndex=56
 	},bar)
 	Corner(fill,3)
+
 	local knob=New("Frame",{
 		Size=UDim2.fromOffset(16,16),
 		Position=UDim2.new(0,-8,.5,-8),
 		BackgroundColor3=C.White,
 		BorderSizePixel=0,
+		Active=false,
 		ZIndex=57
 	},bar)
 	Corner(knob,8)
-	Stroke(knob,C.Line2,1,0)
-	local hit=New("TextButton",{
-		Size=UDim2.new(1,16,0,24),
-		Position=UDim2.new(0,-8,.5,-12),
-		BackgroundTransparency=1,
-		Text="",
-		AutoButtonColor=false,
-		ZIndex=58
-	},bar)
+
 	local value=default
-	local function quantize(v)
-		local range=max-min
-		local step=range<=10 and .1 or 1
-		return math.floor(v/step+.5)*step
-	end
-	local function render(v)
-		local r=math.clamp((v-min)/(max-min),0,1)
-		fill.Size=UDim2.new(r,0,1,0)
-		knob.Position=UDim2.new(r,-8,.5,-8)
-		if math.floor(v)==v then val.Text=tostring(math.floor(v)) else val.Text=string.format("%.1f",v) end
-	end
+
 	local function setValue(v,call)
 		v=math.clamp(tonumber(v) or min,min,max)
-		v=quantize(v)
+		local range=max-min
+		local step=range<=10 and 0.1 or 1
+		v=math.floor(v/step+0.5)*step
+		v=math.clamp(v,min,max)
 		value=v
-		render(v)
-		if call and callback then callback(v) end
+
+		local ratio=math.clamp((v-min)/range,0,1)
+		fill.Size=UDim2.new(ratio,0,1,0)
+		knob.Position=UDim2.new(ratio,-8,0.5,-8)
+
+		if math.abs(v-math.floor(v))<0.001 then
+			val.Text=tostring(math.floor(v))
+		else
+			val.Text=string.format("%.1f",v)
+		end
+
+		if call and callback then
+			task.spawn(function()
+				pcall(callback,v)
+			end)
+		end
 	end
-	local function setFromX(x,call)
+
+	local function updateFromMouse()
+		local mouse=UserInputService:GetMouseLocation()
 		local width=math.max(bar.AbsoluteSize.X,1)
-		local r=math.clamp((x-bar.AbsolutePosition.X)/width,0,1)
-		setValue(min+(max-min)*r,call)
+		local ratio=math.clamp((mouse.X-bar.AbsolutePosition.X)/width,0,1)
+		setValue(min+(max-min)*ratio,true)
 	end
-	hit.MouseButton1Down:Connect(function()
+
+	bar.MouseButton1Down:Connect(function()
 		e.Dragging=true
-		setFromX(UserInputService:GetMouseLocation().X,true)
+		updateFromMouse()
 	end)
+
 	UserInputService.InputChanged:Connect(function(input)
 		if e.Dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
-			setFromX(input.Position.X,true)
+			updateFromMouse()
 		end
 	end)
+
 	UserInputService.InputEnded:Connect(function(input)
-		if input.UserInputType==Enum.UserInputType.MouseButton1 then e.Dragging=false end
+		if input.UserInputType==Enum.UserInputType.MouseButton1 then
+			e.Dragging=false
+		end
 	end)
+
 	setValue(default,false)
-	e.Get=function() return value end
-	e.Set=function(_,v) setValue(v,true) end
+
+	e.Get=function()
+		return value
+	end
+
+	e.Set=function(_,v)
+		setValue(v,true)
+	end
+
 	e.Bar=bar
 	e.Knob=knob
 	e.ValueLabel=val
-	e.Destroy=function() f:Destroy() end
+	e.Destroy=function()
+		if f and f.Parent then f:Destroy() end
+	end
+
 	RebuildElements(section)
 	return e
 end
@@ -739,17 +767,49 @@ local function RebalanceTabCategories(tab)
 	local page=tab.Page
 	local columns=page and page:FindFirstChild("Columns")
 	if not columns then return end
+
 	local left=columns:FindFirstChild("LeftColumn")
 	local right=columns:FindFirstChild("RightColumn")
 	if not left or not right then return end
-	for _,section in ipairs(tab.Sections) do
-		local target
-		local lh=left.AbsoluteSize.Y
-		local rh=right.AbsoluteSize.Y
-		if lh<=rh then target=left else target=right end
-		if section.Frame and section.Frame.Parent~=target then section.Frame.Parent=target end
-		section.Column=target
+
+	local leftHeight=0
+	local rightHeight=0
+
+	for index,section in ipairs(tab.Sections) do
+		if section.Frame and section.Frame.Parent then
+			local frameHeight=section.Frame.AbsoluteSize.Y
+			if frameHeight<=0 then
+				frameHeight=section.Frame.Size.Offset.Y
+			end
+
+			local target
+			if index==1 then
+				target=left
+			elseif index==2 then
+				target=right
+			elseif leftHeight<=rightHeight then
+				target=left
+			else
+				target=right
+			end
+
+			if section.Frame.Parent~=target then
+				section.Frame.Parent=target
+			end
+
+			section.Column=target
+
+			if target==left then
+				leftHeight=leftHeight+frameHeight+10
+			else
+				rightHeight=rightHeight+frameHeight+10
+			end
+		end
 	end
+
+	task.defer(function()
+		UpdatePageCanvas(page)
+	end)
 end
 
 function SectionMethods:Reflow()
@@ -1078,7 +1138,7 @@ function Library:SetTitle(title,subtitle)
 end
 
 function Library:SetStatus(text)
-	StatusText.Text=tostring(text or "STATUS: READY")
+	Status.Text=tostring(text or "STATUS: READY")
 	return self
 end
 
