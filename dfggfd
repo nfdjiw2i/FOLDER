@@ -369,9 +369,15 @@ local function CreateTab(name,icon)
 end
 
 local function RebuildElements(section)
-	for i,e in ipairs(section.Elements) do if e.Frame and e.Frame.Parent then e.Frame.LayoutOrder=i end end
-	if section.RefreshLayout then section:RefreshLayout() end
-	if section.Category then UpdateCategory(section) end
+	if not section or not section.Elements then return end
+	for i,e in ipairs(section.Elements) do
+		if e and e.Frame and e.Frame.Parent then
+			e.Frame.LayoutOrder=i
+		end
+	end
+	if section.RefreshLayout then
+		section:RefreshLayout()
+	end
 end
 
 local function MakeDragHandle(frame,element)
