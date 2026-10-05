@@ -1078,7 +1078,7 @@ function Library:SetTitle(title,subtitle)
 end
 
 function Library:SetStatus(text)
-	Status.Text=tostring(text or "STATUS: READY")
+	StatusText.Text=tostring(text or "STATUS: READY")
 	return self
 end
 
