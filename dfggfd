@@ -1138,7 +1138,10 @@ function Library:SetTitle(title,subtitle)
 end
 
 function Library:SetStatus(text)
-	Status.Text=tostring(text or "STATUS: READY")
+	if StatusText and StatusText.Parent then
+		local value=tostring(text or "STATUS: READY")
+		StatusText.Text=value
+	end
 	return self
 end
 
